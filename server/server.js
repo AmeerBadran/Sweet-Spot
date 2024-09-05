@@ -1,0 +1,61 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+
+// Import routes
+const authRoute = require('./routes/Auth.route.js');
+const eventRoutes = require('./routes/Event.route.js');
+const bookingRoutes = require('./routes/Booking.route.js');
+const paymentRoutes = require('./routes/Payment.route.js');
+const userRoutes = require('./routes/User.route.js');
+const ticketsRoutes = require('./routes/Ticket.route.js');
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+app.use(cookieParser());
+
+// CORS options - adjust origin for Render or dynamic front-end URL
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',  // Replace with your Render frontend URL
+    methods: 'GET,PUT,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
+};
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors(corsOptions));
+
+// Set up the port from environment variables
+const PORT = process.env.PORT || 5501;
+
+// Database connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        app.listen(PORT, '0.0.0.0', () => console.log(`Example app listening on port ${PORT}!`));
+        console.log('Connected to database!');
+    })
+    .catch((err) => {
+        console.error('Connection failed:', err);
+    });
+
+// Routes
+app.use('/api/auth', authRoute);
+app.use('/api/events', eventRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/tickets', ticketsRoutes);
+
+// Serve static files from the 'client/dist' directory
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Simple base route
+app.get('/', (req, res) => res.send('Hello World!'));

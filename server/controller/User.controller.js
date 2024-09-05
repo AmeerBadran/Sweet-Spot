@@ -1,0 +1,84 @@
+const User = require('../models/User.model');
+
+// Get user by ID
+exports.getUserById = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(`Error retrieving user with ID: ${userId}`, error);
+    res.status(500).json({ error: 'An error occurred while retrieving the user' });
+  }
+};
+
+// Get all users
+exports.getAllUsers = async (req, res) => {
+  try {
+    const page = parseInt(req.params.page) || 1;
+    const limit = 6;
+    const skip = (page - 1) * limit;
+
+    const users = await User.find().limit(limit).skip(skip);
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error retrieving users', error);
+    res.status(500).json({ error: 'An error occurred while retrieving users' });
+  }
+};
+
+exports.getCountUsers = async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    console.error('Error counting users', error);
+    res.status(500).json({ error: 'An error occurred while counting users' });
+  }
+};
+
+// Update an existing user
+exports.updateUser = async (req, res) => {
+  const userId = req.params.userId;
+  const { name, email } = req.body;
+
+  console.log(`Received userId: ${userId}`); // Add this line
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, email },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error(`Error updating user with ID: ${userId}`, error);
+    res.status(500).json({ error: 'An error occurred while updating the user' });
+  }
+};
+
+
+// Delete a user
+exports.deleteUser = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(`Error deleting user with ID: ${userId}`, error);
+    res.status(500).json({ error: 'An error occurred while deleting the user' });
+  }
+};
+
