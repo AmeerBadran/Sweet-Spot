@@ -25,9 +25,9 @@ const corsOptions = {
     optionsSuccessStatus: 204
 };
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors(corsOptions));
 
 // Set up the port from environment variables
 const PORT = process.env.PORT || 5501;

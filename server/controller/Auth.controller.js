@@ -124,7 +124,7 @@ const logIn = async (req, res) => {
 
         res.cookie('SweetSpotToken', refreshToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             maxAge: 24 * 60 * 60 * 1000,
         });
 
