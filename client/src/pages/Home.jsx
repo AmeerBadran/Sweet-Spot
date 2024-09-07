@@ -1,6 +1,6 @@
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import MyTimer from "../components/atoms/clock";
+import MyTimer from "../components/atoms/MyTimer";
 import Navbar from "../components/organism/Navbar";
 import ContactForm from "../components/organism/ContactSection";
 import AboutUs from "../components/organism/AboutUs";
