@@ -3,7 +3,7 @@ import { store } from '../../app/store';
 //const baseURL = import.meta.env.HR_SYSTEM_BASE_URL
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5501/api',
+  baseURL: 'https://sweet-spot-server.onrender.com/api',
   withCredentials: true,
 });
 

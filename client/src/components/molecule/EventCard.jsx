@@ -20,7 +20,7 @@ function formatDate(dateString) {
 function EventCard({ image, id, title, description, price, date, location, availableTickets, capacity, homeTickets, handleDelete }) {
   return (
     <div className={`2md:flex ${homeTickets === 'Home' && 'xl:min-w-[1100px]'} p-3 border bg-slate-200 rounded-xl gap-4 2md:max-h-72 relative`}>
-      <img src={`http://localhost:5501/uploads/eventsImage/${image}`} alt={title} className="object-cover w-full rounded-t-lg 2md:h-64 min-h-64 2md:w-96 2md:min-w-64 2md:rounded-none 2md:rounded-s-lg" />
+      <img src={`https://sweet-spot-server.onrender.com/uploads/eventsImage/${image}`} alt={title} className="object-cover w-full rounded-t-lg 2md:h-64 min-h-64 2md:w-96 2md:min-w-64 2md:rounded-none 2md:rounded-s-lg" />
       <div className="text-black mt-4 w-full flex flex-col justify-between text-center 2xmobile:text-start overflow-y-auto">
         <div>
           <h5 className="mb-2 text-xl 2xmobile:text-2xl font-bold tracking-tight">Event: {title}</h5>
