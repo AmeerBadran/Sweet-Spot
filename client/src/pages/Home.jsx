@@ -11,7 +11,7 @@ import PaginationRounded from '../components/molecule/PaginationRounded';
 import { getAllEvents, getCountEvents } from '../api/endpoints/events';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-
+import bg_image from "../assets/images/6a60863f-851e-4026-a8a5-218b429fe327.jpg"
 AOS.init();
 
 export default function Home() {
@@ -67,11 +67,16 @@ export default function Home() {
   const handlePagination = (event, value) => {
     setCurrentPage(value);
   };
-
   return (
     <div>
       <Navbar />
-      <section id="home" className='relative bg-home-img bg-base-color bg-no-repeat bg-cover bg-bottom w-full h-[100vh] '>
+      <section id="home" className='relative bg-base-color w-full h-[100vh] '
+        style={{
+          backgroundImage: `url(${bg_image})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          backgroundPosition: 'bottom'
+        }}>
         <div className=' absolute w-full h-full bg-slate-900 bg-opacity-70'></div>
         <div className='first-section text-white flex flex-col justify-center items-center max-w-[1300px] mx-auto h-full pt-20'>
           <h1 data-aos="fade-right" data-aos-duration="2000" className='text-3xl xmobile:text-5xl 2xmobile:text-7xl md:text-8xl font-black z-10' >SWEET SPOT</h1>
