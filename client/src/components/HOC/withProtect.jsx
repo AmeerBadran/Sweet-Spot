@@ -13,15 +13,19 @@ export default function ProtectdRoute({ element, path }) {
 
   useEffect(() => {
     if (accessToken) {
-      if (
+      if (userRole === 'scanner' && path !== '/' && path !== '/qrScanner') {
+        toast.error('You do not have permission to access this link.');
+        navigate('/');
+      } else if (
         (userRole !== 'admin') &&
         (path === '/admin' || path === '/admin/dashboard' || path === '/admin/settings' || path === '/admin/addEvent' || path === '/admin/allEvents' || path === '/admin/allEvents/editEvent' || path === '/qrScanner')
       ) {
-        toast.error('You do not have permission to access this link.');
-        navigate('/');
-      } else if (userRole !== 'admin' && path === '/admin') {
-        toast.error('You do not have permission to access this link.');
-        navigate('/');
+        if (userRole === 'scanner' && path === '/qrScanner') {
+          navigate('/qrScanner');
+        } else {
+          toast.error('You do not have permission to access this link.');
+          navigate('/');
+        }
       }
     }
   }, [userRole, path, accessToken, navigate]);

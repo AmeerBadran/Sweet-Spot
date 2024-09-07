@@ -2,17 +2,32 @@
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import qrimage from "../../assets/images/unnamed.png"
 import { Link } from "react-router-dom";
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const options = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  };
+  return date.toLocaleDateString('en-US', options);
+}
+
+
 function EventCard({ image, id, title, description, price, date, location, availableTickets, capacity, homeTickets, handleDelete }) {
   return (
-    <div className="2md:flex p-3 border bg-slate-200 rounded-xl gap-4 2md:max-h-72 relative">
-      <img src={`http://localhost:5501/uploads/${image}`} alt={title} className="object-cover w-full rounded-t-lg 2md:h-64 min-h-64 2md:w-96 2md:min-w-64 2md:rounded-none 2md:rounded-s-lg" />
+    <div className={`2md:flex ${homeTickets === 'Home' && 'xl:min-w-[1100px]'} p-3 border bg-slate-200 rounded-xl gap-4 2md:max-h-72 relative`}>
+      <img src={`http://localhost:5501/uploads/eventsImage/${image}`} alt={title} className="object-cover w-full rounded-t-lg 2md:h-64 min-h-64 2md:w-96 2md:min-w-64 2md:rounded-none 2md:rounded-s-lg" />
       <div className="text-black mt-4 w-full flex flex-col justify-between text-center 2xmobile:text-start overflow-y-auto">
         <div>
           <h5 className="mb-2 text-xl 2xmobile:text-2xl font-bold tracking-tight">Event: {title}</h5>
           <p className="mb-3 text-sm 2xmobile:text-base font-normal">{description}</p>
-          <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">Date: {date}</p>
+          <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">Date: {formatDate(date)}</p>
           <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">Location: {location}</p>
-          <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">Price: {price}</p>
+          <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">Price: <span className='text-gray-600'>KWD </span>{price}</p>
         </div>
         <div className="w-full flex flex-col 2xmobile:flex-row justify-between gap-2 items-center">
           {availableTickets > 0 ? (
@@ -27,9 +42,25 @@ function EventCard({ image, id, title, description, price, date, location, avail
 
           <p> Available Tickets <span className="font-semibold"> {availableTickets}</span> from <span className="font-semibold"> {capacity}</span></p>
           {homeTickets === 'Home' && (
-            <button type="button" className="px-4 py-2 font-semibold border border-slate-700 rounded-full hover:text-white hover:bg-base-color transition-all duration-300">
+            <Link
+              to="eventDetails"
+                state={{
+                  event: {
+                    id: id,
+                    title: title,
+                    price: price,
+                    date: date,
+                    description: description,
+                    location: location,
+                    capacity: capacity,
+                    availableTickets: availableTickets,
+                    coverImage: image
+                  }
+                }}
+              className="px-4 py-2 font-semibold border border-slate-700 rounded-full hover:text-white hover:bg-base-color transition-all duration-300"
+            >
               Buy Ticket
-            </button>
+            </Link>
           )}
 
         </div>
@@ -55,7 +86,6 @@ function EventCard({ image, id, title, description, price, date, location, avail
                 coverImage: image
               }
             }}
-            type="button"
             className="text-3xl hover:text-base-color transition-all duration-300"
           >
             <FaEdit />

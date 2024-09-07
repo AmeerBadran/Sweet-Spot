@@ -1,7 +1,11 @@
 const User = require('../models/User.model');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+
+let temporaryUsers = {};
 
 const signUp = async (req, res) => {
     try {
@@ -18,14 +22,59 @@ const signUp = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.HASH_PASS));
 
-        const newUser = new User({
+        const verificationCode = crypto.randomInt(100000, 999999);
+
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Verification Code',
+            text: `Your verification code is: ${verificationCode}`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        temporaryUsers[email] = {
             name,
             email,
             password: hashedPassword,
             role,
+            verificationCode,
+        };
+        console.log(temporaryUsers)
+        res.status(200).json({ message: 'Verification code sent to email' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const verifyCode = async (req, res) => {
+    try {
+        const { email, code } = req.body;
+
+        const userData = temporaryUsers[email];
+        if (!userData) {
+            return res.status(400).json({ message: 'Invalid email or code' });
+        }
+
+        if (userData.verificationCode !== parseInt(code)) {
+            return res.status(400).json({ message: 'Incorrect verification code' });
+        }
+        const newUser = new User({
+            name: userData.name,
+            email: userData.email,
+            password: userData.password,
+            role: userData.role,
         });
 
         await newUser.save();
+        delete temporaryUsers[email];
 
         res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
@@ -120,7 +169,7 @@ const refresh = async (req, res) => {
                 }
             });
         } else {
-            return res.status(406).json({ message: 'Unauthorized' });
+            return res.status(200).json({ message: 'Unauthorized' });
         }
     } catch (error) {
         return res.status(500).json({ message: 'Internal Server Error' });
@@ -140,5 +189,6 @@ module.exports = {
     signUp,
     logIn,
     refresh,
-    logOut
+    logOut,
+    verifyCode
 };

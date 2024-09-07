@@ -21,7 +21,7 @@ export default function Dashboard() {
         const [usersRes, eventsRes, ticketsRes] = await Promise.all([
           getCountUsers(),
           getCountEvents(),
-          getCountTickets(),
+          getCountTickets('all'),
         ]);
         setUsersCount(usersRes?.data?.count || 1);
         setEventsCount(eventsRes?.data?.count || 0);
@@ -122,10 +122,12 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
+        {usersData.length > 0 &&
+          <div className="mx-auto">
+            <PaginationRounded count={pageCount} page={currentPage} onChange={handlePagination} />
+          </div>
+        }
 
-        <div className="mx-auto">
-          <PaginationRounded count={pageCount} page={currentPage} onChange={handlePagination} />
-        </div>
       </div>
     </div>
   );

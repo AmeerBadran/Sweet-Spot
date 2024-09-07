@@ -10,7 +10,7 @@ const ensureDirExists = (dir) => {
 
 const storage1 = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '../uploads');
+        const uploadPath = path.join(__dirname, '../uploads/eventsImage');
         ensureDirExists(uploadPath);
         cb(null, uploadPath);
     },

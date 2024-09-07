@@ -39,7 +39,7 @@ const SpeedDialComponent = () => {
     dispatch(deleteAuthData());
   }
   return (
-    <div data-dial-init className="fixed end-6 bottom-6 z-[300]">
+    <div data-dial-init className="fixed end-8 bottom-12 z-[300]">
       <div id="speed-dial-menu-click" className={`flex flex-col items-center mb-4 space-y-2 overflow-y-hidden  ${!dialState ? `opacity-100 ${dialHeight}` : 'h-0 opacity-0'} transition-all duration-500`}>
 
         {!accessToken ? (
@@ -78,7 +78,7 @@ const SpeedDialComponent = () => {
             </div>
           </button>
         )}
-        {(accessToken) && (
+        {(accessToken && userRole !== 'scanner') && (
           <Link
             to={"/myTickets"}
             className="flex group justify-center items-center w-[52px] h-[52px] text-gray-700 bg-gray-100 hover:bg-gray-700 hover:text-gray-100 rounded-full border border-gray-600 shadow-sm focus:ring-4 focus:outline-none focus:ring-gray-400 transition-all duration-300"
@@ -90,30 +90,30 @@ const SpeedDialComponent = () => {
             </div>
           </Link>
         )}
-        {(accessToken && userRole === 'admin') && (
-          <>
-            <Link
-              to={"/qrScanner"}
-              className="flex group justify-center items-center w-[52px] h-[52px] text-gray-700 bg-gray-100 hover:bg-gray-700 hover:text-gray-100 rounded-full border border-gray-600 shadow-sm focus:ring-4 focus:outline-none focus:ring-gray-400 transition-all duration-300"
-            >
-              <BsQrCodeScan className='text-xl' />
-              <div className="absolute group-hover:visible invisible z-[200] flex left-[-110px] w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700">
-                QR Scanner
-                <div className='w-3 h-3 absolute bg-gray-900 rotate-45 -right-1 top-[11px]'></div>
-              </div>
-            </Link>
-            <Link
-              to={"/admin"}
-              className="flex group justify-center items-center w-[52px] h-[52px] text-gray-700 bg-gray-100 hover:bg-gray-700 hover:text-gray-100 rounded-full border border-gray-600 shadow-sm focus:ring-4 focus:outline-none focus:ring-gray-400 transition-all duration-300"
-            >
-              <RiAdminFill className='text-2xl' />
-              <div className="absolute group-hover:visible invisible z-[200] flex left-[-74px] w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700">
-                Admin
-                <div className='w-3 h-3 absolute bg-gray-900 rotate-45 -right-1 top-[11px]'></div>
-              </div>
-            </Link>
-          </>
-        )}
+        {(accessToken && userRole === 'admin' || userRole === 'scanner') &&
+          <Link
+            to={"/qrScanner"}
+            className="flex group justify-center items-center w-[52px] h-[52px] text-gray-700 bg-gray-100 hover:bg-gray-700 hover:text-gray-100 rounded-full border border-gray-600 shadow-sm focus:ring-4 focus:outline-none focus:ring-gray-400 transition-all duration-300"
+          >
+            <BsQrCodeScan className='text-xl' />
+            <div className="absolute group-hover:visible invisible z-[200] flex left-[-110px] w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700">
+              QR Scanner
+              <div className='w-3 h-3 absolute bg-gray-900 rotate-45 -right-1 top-[11px]'></div>
+            </div>
+          </Link>
+        }
+        {(accessToken && userRole === 'admin') &&
+          <Link
+            to={"/admin"}
+            className="flex group justify-center items-center w-[52px] h-[52px] text-gray-700 bg-gray-100 hover:bg-gray-700 hover:text-gray-100 rounded-full border border-gray-600 shadow-sm focus:ring-4 focus:outline-none focus:ring-gray-400 transition-all duration-300"
+          >
+            <RiAdminFill className='text-2xl' />
+            <div className="absolute group-hover:visible invisible z-[200] flex left-[-74px] w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700">
+              Admin
+              <div className='w-3 h-3 absolute bg-gray-900 rotate-45 -right-1 top-[11px]'></div>
+            </div>
+          </Link>
+        }
 
         <Link
           to={"/"}
@@ -139,7 +139,7 @@ const SpeedDialComponent = () => {
         <PiNavigationArrowFill className='text-xl group-hover:rotate-45 transition-all duration-300' />
         <span className="sr-only">Open actions menu</span>
       </button>
-    </div>
+    </div >
   );
 };
 

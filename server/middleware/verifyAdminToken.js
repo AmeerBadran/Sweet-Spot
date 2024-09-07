@@ -16,7 +16,7 @@ const verifyAdminToken = (req, res, next) => {
 
         req.userId = decoded.id;
         
-        if (decoded.roles === "admin") {
+        if (decoded.role === "admin") {
             next();
         } else {
             return res.status(403).json({ message: 'You do not have the necessary permissions.' });

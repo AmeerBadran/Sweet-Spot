@@ -5,30 +5,42 @@ import { deleteEvent, getAllEvents, getCountEvents } from "../api/endpoints/even
 import { toast } from "react-toastify";
 
 export default function AllEvents() {
+  const [filter, setFilter] = useState('open');
   const [eventsData, setEventsData] = useState([]);
   const [eventsCount, setEventsCount] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
   const itemsPerPage = 3;
-  const pageCount = Math.ceil(eventsCount / itemsPerPage);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchEventsCount = async () => {
       try {
-        const [eventsRes] = await Promise.all([
-          getCountEvents(),
-        ]);
+        const eventsRes = await getCountEvents(filter);
         setEventsCount(eventsRes?.data?.count || 0);
-        await allEventsData(currentPage);
+        setPageCount(Math.ceil(eventsCount / itemsPerPage))
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching events count:", error);
       }
     };
-    fetchData();
-  }, [currentPage, eventsCount]);
 
-  const allEventsData = async (page) => {
+    fetchEventsCount();
+  }, [filter, eventsCount]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        await allEventsData(currentPage, filter);
+      } catch (error) {
+        console.error("Error fetching events data:", error);
+      }
+    };
+
+    fetchEvents();
+  }, [currentPage, filter]);
+
+  const allEventsData = async (page, filter) => {
     try {
-      const response = await getAllEvents(page);
+      const response = await getAllEvents(page, filter);
       setEventsData(response?.data || []);
     } catch (error) {
       console.error("Error fetching events data:", error);
@@ -45,6 +57,12 @@ export default function AllEvents() {
     }
   };
 
+
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+    setCurrentPage(1);
+  };
+
   const handlePagination = (event, value) => {
     setCurrentPage(value);
   };
@@ -54,12 +72,25 @@ export default function AllEvents() {
       <div className='p-6 border rounded-t-lg'>
         <h1 className='text-2xl font-semibold text-blue-900 '>All Events</h1>
       </div>
+      <div className="z-10 mt-10 flex justify-center items-center gap-4">
+        <label htmlFor="eventFilter" className=" text-black">Filter Events: </label>
+        <select
+          id="eventFilter"
+          value={filter}
+          onChange={handleFilterChange}
+          className="border border-gray-300 rounded px-2 py-1"
+        >
+          <option value="all">All Events</option>
+          <option value="open">Open Events</option>
+          <option value="closed">Closed Events</option>
+        </select>
+      </div>
       <div className='p-6 space-y-6'>
         {eventsData.map(event => (
           <EventCard
             key={event._id}
             id={event._id}
-            image={event.coverImage} // Update this to reflect the correct image path
+            image={event.coverImage}
             title={event.title}
             description={event.description}
             date={event.date}
@@ -71,9 +102,12 @@ export default function AllEvents() {
             handleDelete={() => handleDelete(event._id)}
           />
         ))}
-        <div className="mx-auto mt-20">
-          <PaginationRounded count={pageCount} page={currentPage} onChange={handlePagination} />
-        </div>
+
+        {eventsData.length > 0 &&
+          <div className="mx-auto mt-20">
+            <PaginationRounded count={pageCount} page={currentPage} onChange={handlePagination} />
+          </div>
+        }
       </div>
     </div>
   )

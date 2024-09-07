@@ -1,12 +1,12 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { signUp } from '../api/endpoints/auth';
 import { toast } from 'react-toastify';
+import { addUserByAdmin } from '../api/endpoints/users';
 
 const AddUser = () => {
   const callSignUp = async (signUpData) => {
     try {
-      const response = await signUp(signUpData);
+      const response = await addUserByAdmin(signUpData);
       toast.success('Your data has been inserted successfully.');
       return response;
     } catch (error) {
@@ -32,7 +32,7 @@ const AddUser = () => {
       confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
         .required('Confirm password is required'),
-        role: Yup.string().oneOf(['user', 'admin'], 'Invalid user role').required('User role is required'),
+      role: Yup.string().oneOf(['user', 'admin', 'scanner'], 'Invalid user role').required('User role is required'),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       await callSignUp(values);
@@ -121,6 +121,7 @@ const AddUser = () => {
           >
             <option value="user">User</option>
             <option value="admin">Admin</option>
+            <option value="scanner">Scanner</option>
           </select>
           {formik.touched.role && formik.errors.role ? (
             <div className="text-red-500 text-sm">{formik.errors.role}</div>

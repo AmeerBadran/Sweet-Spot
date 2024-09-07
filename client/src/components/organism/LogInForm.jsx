@@ -109,14 +109,6 @@ const LoginForm = () => {
             >
               Forgot Password?
             </button>
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                className="form-checkbox"
-                {...getFieldProps('rememberMe')}
-              />
-              <span className="ml-2 text-sm">Remember me</span>
-            </label>
           </div>
           <button
             type="submit"

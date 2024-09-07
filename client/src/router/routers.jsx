@@ -20,6 +20,7 @@ import PersistLogin from "../components/HOC/PersistLogin";
 import NotProtectdRoute from "../components/HOC/withNotProtect"
 import ProtectdRoute from "../components/HOC/withProtect"
 import AddUser from "../template/AddUser";
+import EventDetails from "../components/organism/EventDetails";
 
 
 const router = createBrowserRouter([
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
             index: true,
             element: (<Home />),
           },
+
           {
             path: "/myTickets",
             element: (<ProtectdRoute path="/myTickets" element={<MyTickets />} />),
@@ -78,6 +80,10 @@ const router = createBrowserRouter([
         element: (
           <ProtectdRoute path="/qrScanner" element={<ScannerPage />} />
         ),
+      },
+      {
+        path: '/eventDetails',
+        element: (<ProtectdRoute path="/eventDetails" element={<EventDetails />} />),
       },
       {
         path: "logIn",

@@ -13,6 +13,11 @@ export const getUserById = (userId) => {
   return axiosInstance.get(`/user/${userId}`);
 }
 
+export const addUserByAdmin = () => {
+  return axiosInstance.post(`/user/addUser`);
+}
+
+
 export const updateUser = (userId, newData) => {
   return axiosInstance.put(`/user/${userId}`, newData);
 };
@@ -20,3 +25,4 @@ export const updateUser = (userId, newData) => {
 export const deleteUser = (userId) => {
   return axiosInstance.delete(`/user/${userId}`);
 }
+

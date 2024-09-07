@@ -18,6 +18,12 @@ export const signUp = (signUpData) => {
   });
 }
 
+export const verifyCode = (verificationData) => {
+  return axiosInstance.post('/auth/verifyCode', verificationData, {
+    withCredentials: true
+  });
+}
+
 export const refresh = () => {
   return axiosInstance.post('/auth/refresh', {}, {
     withCredentials: true

@@ -1,5 +1,7 @@
 import { useFormik } from "formik";
 import contact from "../../assets/images/8ae7d70e-5729-46e6-9924-2a9bac677e86.jpg"
+import { sendContactForm } from "../../api/endpoints/contact";
+import { toast } from "react-toastify";
 const ContactForm = () => {
   const formik = useFormik({
     initialValues: {
@@ -9,8 +11,15 @@ const ContactForm = () => {
       subject: "",
       message: "",
     },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        await sendContactForm(values);
+        toast.success("Message sent successfully!");
+        resetForm();
+      // eslint-disable-next-line no-unused-vars
+      } catch (error) {
+        toast.error("Failed to send message. Please try again.");
+      }
     },
   });
 

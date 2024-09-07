@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useTimer } from 'react-timer-hook';
+import { getClosestEvent } from '../../api/endpoints/events';
+
 
 // eslint-disable-next-line react/prop-types
 function MyTimer({ expiryTimestamp }) {
@@ -10,8 +13,8 @@ function MyTimer({ expiryTimestamp }) {
   } = useTimer({ expiryTimestamp, onExpire: () => console.warn('onExpire called') });
 
   return (
-    <div data-aos="zoom-in"  data-aos-duration="2000" style={{ textAlign: 'center' }}>
-      <div className=' xmobile:flex gap-5 2xmobile:gap-10 text-[50px] 2xmobile:text-[80px] md:text-[100px] 2md:gap-20 text-center'>
+    <div data-aos="zoom-in" data-aos-duration="2000" style={{ textAlign: 'center' }}>
+      <div className='xmobile:flex gap-5 2xmobile:gap-10 text-[50px] 2xmobile:text-[80px] md:text-[100px] 2md:gap-20 text-center'>
         <div className='flex gap-5 2xmobile:gap-10 2md:gap-20 justify-center'>
           <span>{days}<p className='text-lg md:text-2xl font-black'>Days</p></span>
           <span>{hours}<p className='text-lg md:text-2xl font-black'>Hours</p></span>
@@ -21,18 +24,44 @@ function MyTimer({ expiryTimestamp }) {
           <span>{seconds}<p className='text-lg md:text-2xl font-black'>Seconds</p></span>
         </div>
       </div>
-
     </div>
   );
 }
 
-// eslint-disable-next-line react/prop-types
-export default function App({ eventDate = '2024-09-15T17:00:00' }) {
-  const targetDate = new Date(eventDate);
+export default function App() {
+  const [eventDate, setEventDate] = useState(null);
+  const [noEventsMessage, setNoEventsMessage] = useState('');
+
+  useEffect(() => {
+    const fetchClosestEvent = async () => {
+      try {
+        const response = await getClosestEvent();
+        const closestEvent = response.data;
+
+        if (closestEvent && closestEvent.date) {
+          setEventDate(new Date(closestEvent.date));
+        } else if (closestEvent.message === 'There are no upcoming events.') {
+          setNoEventsMessage('There are no upcoming events.');
+        }
+      } catch (error) {
+        console.error('Error fetching closest event:', error);
+      }
+    };
+
+    fetchClosestEvent();
+  }, []);
+
+  if (noEventsMessage) {
+    return <p>{noEventsMessage}</p>;
+  }
+
+  if (!eventDate) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className='z-10'>
-      <MyTimer expiryTimestamp={targetDate} />
+      <MyTimer expiryTimestamp={eventDate} />
     </div>
   );
 }

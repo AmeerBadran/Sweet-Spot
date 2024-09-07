@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
 const TicketSchema = new mongoose.Schema({
-  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', required: true },
+  qrID: { type: String, required: true, unique: true },
   eventData: {
     eventId: { type: String, required: true },
-    eventName: { type: String, required: true },
-    eventLocation: { type: String, required: true },
-    eventDate: { type: Date, required: true },
+    title: { type: String, required: true },
+    location: { type: String, required: true },
+    date: { type: Date, required: true },
   },
   userData: {
     userId: { type: String, required: true },
-    userName: { type: String, required: true },
-    userEmail: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
   },
   qrCode: { type: String, required: true },
   status: { type: String, default: 'unused' },

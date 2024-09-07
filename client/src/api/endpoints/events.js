@@ -8,12 +8,12 @@ export const createEvent = (formData) => {
   });
 };
 
-export const getAllEvents = (page) => {
-  return axiosInstance.get(`/events/all/${page}`);
+export const getAllEvents = (page, filter) => {
+  return axiosInstance.get(`/events/all/${page}/${filter}`);
 }
 
-export const getCountEvents = () => {
-  return axiosInstance.get('/events/count');
+export const getCountEvents = (filter) => {
+  return axiosInstance.get(`/events/count/${filter}`);
 }
 
 export const getEventById = (eventId) => {
@@ -26,4 +26,8 @@ export const updateEvent = (eventId, newData) => {
 
 export const deleteEvent = (eventId) => {
   return axiosInstance.delete(`/events/delete/${eventId}`);
+}
+
+export const getClosestEvent = () => {
+  return axiosInstance.get(`/events/closestEvent`);
 }

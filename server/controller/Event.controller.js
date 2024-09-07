@@ -27,7 +27,16 @@ exports.createEvent = async (req, res) => {
 }
 exports.getCountEvents = async (req, res) => {
   try {
-    const count = await Event.countDocuments();
+    const filter = req.params.filter;
+    let count;
+    if (filter === 'open') {
+      count = await Event.countDocuments({ availableTickets: { $gt: 0 } });
+    } else if (filter === 'closed') {
+      count = await Event.countDocuments({ availableTickets: 0 });
+    } else {
+      count = await Event.countDocuments();
+    }
+
     res.json({ count });
   } catch (error) {
     console.error('Error counting events', error);
@@ -35,17 +44,52 @@ exports.getCountEvents = async (req, res) => {
   }
 };
 
+
 exports.getAllEvents = async (req, res) => {
   try {
     const page = parseInt(req.params.page) || 1;
     const limit = 3;
     const skip = (page - 1) * limit;
-    const events = await Event.find().limit(limit).skip(skip);
+    const filter = req.params.filter || 'all';
+
+    let query = {};
+
+    if (filter === 'open') {
+      query.availableTickets = { $gt: 0 };
+    } else if (filter === 'closed') {
+      query.availableTickets = 0;
+    }
+
+    const events = await Event.find(query)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
+
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getClosestEvent = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const closestEvent = await Event.findOne({ date: { $gt: now } })
+      .sort({ date: 1 });
+
+    if (!closestEvent) {
+      return res.status(404).json({ message: 'There are no upcoming events.' });
+    }
+
+    res.status(200).json(closestEvent);
+  } catch (error) {
+    console.error('Error fetching closest event:', error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 exports.getEventById = async (req, res) => {
   try {
@@ -86,7 +130,7 @@ exports.updateEventById = async (req, res) => {
         location: req.body.location,
         price: req.body.price,
         capacity: req.body.capacity,
-        availableTickets: req.body.capacity,
+        availableTickets: req.body.availableTickets,
       },
       { new: true }
     );

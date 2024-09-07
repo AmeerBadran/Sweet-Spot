@@ -39,8 +39,9 @@ const AddEvent = () => {
       location: Yup.string().required('Location is required'),
       capacity: Yup.number().required('Capacity is required').typeError('Capacity must be a number'),
     }),
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       await callAddEvent(values);
+      resetForm();
       setSubmitting(false);
     },
   });

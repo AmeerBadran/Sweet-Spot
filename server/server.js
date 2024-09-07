@@ -8,11 +8,9 @@ const path = require('path');
 // Import routes
 const authRoute = require('./routes/Auth.route.js');
 const eventRoutes = require('./routes/Event.route.js');
-const bookingRoutes = require('./routes/Booking.route.js');
-const paymentRoutes = require('./routes/Payment.route.js');
 const userRoutes = require('./routes/User.route.js');
 const ticketsRoutes = require('./routes/Ticket.route.js');
-
+const contactRoutes = require('./routes/Contact.route.js');
 // Load environment variables
 dotenv.config();
 
@@ -47,10 +45,9 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/api/auth', authRoute);
 app.use('/api/events', eventRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/payments', paymentRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tickets', ticketsRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Serve static files from the 'client/dist' directory
 app.use(express.static(path.join(__dirname, '/client/dist')));
