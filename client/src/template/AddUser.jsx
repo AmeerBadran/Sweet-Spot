@@ -4,14 +4,14 @@ import { toast } from 'react-toastify';
 import { addUserByAdmin } from '../api/endpoints/users';
 
 const AddUser = () => {
-  const callSignUp = async (signUpData) => {
+  const callAddUser = async (signUpData) => {
     try {
       const response = await addUserByAdmin(signUpData);
       toast.success('Your data has been inserted successfully.');
       return response;
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Sign Up failed. Please try again.');
-      return { error: "Sign Up failed. Please try again." };
+      toast.error(error?.response?.data?.message || 'Add failed. Please try again.');
+      return { error: "Add failed. Please try again." };
     }
   }
   // Formik with Yup validation
@@ -35,7 +35,7 @@ const AddUser = () => {
       role: Yup.string().oneOf(['user', 'admin', 'scanner'], 'Invalid user role').required('User role is required'),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      await callSignUp(values);
+      await callAddUser(values);
       setSubmitting(false);
     },
   });

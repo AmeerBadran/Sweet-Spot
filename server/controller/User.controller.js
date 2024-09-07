@@ -1,4 +1,5 @@
 const User = require('../models/User.model');
+const bcrypt = require('bcrypt');
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
@@ -10,7 +11,6 @@ exports.getUserById = async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    console.error(`Error retrieving user with ID: ${userId}`, error);
     res.status(500).json({ error: 'An error occurred while retrieving the user' });
   }
 };
@@ -56,7 +56,6 @@ exports.getAllUsers = async (req, res) => {
 
     res.status(200).json(users);
   } catch (error) {
-    console.error('Error retrieving users', error);
     res.status(500).json({ error: 'An error occurred while retrieving users' });
   }
 };
@@ -66,7 +65,6 @@ exports.getCountUsers = async (req, res) => {
     const count = await User.countDocuments();
     res.json({ count });
   } catch (error) {
-    console.error('Error counting users', error);
     res.status(500).json({ error: 'An error occurred while counting users' });
   }
 };
@@ -75,8 +73,6 @@ exports.getCountUsers = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const userId = req.params.userId;
   const { name, email } = req.body;
-
-  console.log(`Received userId: ${userId}`); // Add this line
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -89,9 +85,8 @@ exports.updateUser = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(updatedUser);
+    res.json('User Updated');
   } catch (error) {
-    console.error(`Error updating user with ID: ${userId}`, error);
     res.status(500).json({ error: 'An error occurred while updating the user' });
   }
 };
@@ -107,7 +102,6 @@ exports.deleteUser = async (req, res) => {
     }
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error(`Error deleting user with ID: ${userId}`, error);
     res.status(500).json({ error: 'An error occurred while deleting the user' });
   }
 };

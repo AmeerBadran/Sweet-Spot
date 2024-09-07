@@ -144,7 +144,7 @@ exports.getCountTickets = async (req, res) => {
     }
 
     const count = await Ticket.countDocuments(query);
-    res.json({ count });
+    res.status(200).json({ count });
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while counting tickets' });
   }

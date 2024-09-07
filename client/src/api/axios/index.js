@@ -40,7 +40,6 @@ axiosInstance.interceptors.response.use(
       }
 
       if (status === 500) {
-        alert("A server error occurred. Please try again later.");
 
         //window.location = "/server-error";
 
