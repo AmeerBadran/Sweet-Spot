@@ -182,6 +182,7 @@ const logOut = (req, res) => {
     res.cookie('SweetSpotToken', null, {
         httpOnly: true,
         secure: true,
+        sameSite: 'None',
         maxAge: 1,
     });
     res.status(200).json({ message: 'Logged out successfully' });
