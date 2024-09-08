@@ -1,9 +1,9 @@
 import axios from "axios";
 import { store } from '../../app/store';
-//const baseURL = import.meta.env.FRONTEND_BASE_URL
+const baseURL = import.meta.env.FRONTEND_BASE_URL
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5501/api/',
+  baseURL: baseURL,
   withCredentials: true,
 });
 
