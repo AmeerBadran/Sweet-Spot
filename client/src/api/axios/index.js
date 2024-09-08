@@ -1,9 +1,9 @@
 import axios from "axios";
 import { store } from '../../app/store';
-const baseURL = import.meta.env.FRONTEND_BASE_URL
+//const baseURL = import.meta.env.FRONTEND_BASE_URL
 
 const axiosInstance = axios.create({
-  baseURL: baseURL,
+  baseURL: 'https://sweet-spot-server.onrender.com/api',
   withCredentials: true,
 });
 
