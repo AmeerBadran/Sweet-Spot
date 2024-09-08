@@ -11,6 +11,7 @@ import PaginationRounded from '../components/molecule/PaginationRounded';
 import { getAllEvents, getCountEvents } from '../api/endpoints/events';
 import { useEffect, useState } from 'react';
 import bg_image from "../assets/images/6a60863f-851e-4026-a8a5-218b429fe327.jpg"
+import { toast } from 'react-toastify';
 AOS.init();
 
 export default function Home() {
@@ -42,7 +43,7 @@ export default function Home() {
       try {
         await allEventsData(currentPage, filter);
       } catch (error) {
-        alert.error("Error fetching events data:", error);
+        toast.error("Error fetching events data:", error);
       }
     };
 
@@ -54,7 +55,7 @@ export default function Home() {
       const response = await getAllEvents(page, filter);
       setEventsData(response?.data || []);
     } catch (error) {
-      alert.error("Error fetching events data:", error);
+      toast.error("Error fetching events data:", error);
     }
   };
 

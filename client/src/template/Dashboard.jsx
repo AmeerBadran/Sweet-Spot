@@ -28,7 +28,7 @@ export default function Dashboard() {
         setTicketsCount(ticketsRes?.data?.count || 0);
         allUsersData(1);
       } catch (error) {
-        alert.error("Error fetching data:", error);
+        toast.error("Error fetching data:", error);
       }
     };
     fetchData();

@@ -29,11 +29,11 @@ axiosInstance.interceptors.response.use(
   function (error) {
     if (error.response) {
       const status = error.response.status;
-      if (status === 401) {
+      if (status === 400) {
         window.location = "/login";
       }
       if (status === 500) {
-        //window.location = "/server-error";
+        window.location = "/server-error";
       }
     } else if (error.request) {
       alert("Network error. Please check your connection.");
