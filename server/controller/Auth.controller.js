@@ -120,13 +120,14 @@ const logIn = async (req, res) => {
                 role: foundUser.role
             },
             process.env.JWT_REFRESH_SECRET,
-            { expiresIn: '1d' }
+            { expiresIn: '7d' }
         );
 
         res.cookie('SweetSpotToken', refreshToken, {
             httpOnly: true,
             secure: true,
-            maxAge: 24 * 60 * 60 * 1000,
+            sameSite: 'None',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
         res.status(200).json({
