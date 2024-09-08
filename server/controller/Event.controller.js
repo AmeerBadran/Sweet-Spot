@@ -7,7 +7,6 @@ exports.createEvent = async (req, res) => {
       return res.status(400).json({ message: err.message });
     }
     try {
-      console.log(req.file.filename)
       const newEvent = new Event({
         title: req.body.title,
         description: req.body.description,
@@ -39,7 +38,6 @@ exports.getCountEvents = async (req, res) => {
 
     res.json({ count });
   } catch (error) {
-    console.error('Error counting events', error);
     res.status(500).json({ error: 'An error occurred while counting events' });
   }
 };
@@ -64,7 +62,7 @@ exports.getAllEvents = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
-
+      
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -84,7 +82,6 @@ exports.getClosestEvent = async (req, res) => {
 
     res.status(200).json(closestEvent);
   } catch (error) {
-    console.error('Error fetching closest event:', error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -120,28 +117,34 @@ exports.deleteEventById = async (req, res) => {
 };
 
 exports.updateEventById = async (req, res) => {
-  try {
-    const updatedEvent = await Event.findByIdAndUpdate(
-      req.params.id,
-      {
-        title: req.body.title,
-        description: req.body.description,
-        date: req.body.date,
-        location: req.body.location,
-        price: req.body.price,
-        capacity: req.body.capacity,
-        availableTickets: req.body.availableTickets,
-      },
-      { new: true }
-    );
-
-    if (!updatedEvent) {
-      return res.status(404).json({ message: 'Event not found' });
+  uploadUserCoverImage(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
     }
+    try {
+      const updatedEvent = await Event.findByIdAndUpdate(
+        req.params.id,
+        {
+          title: req.body.title,
+          description: req.body.description,
+          date: req.body.date,
+          location: req.body.location,
+          price: req.body.price,
+          capacity: req.body.capacity,
+          availableTickets: req.body.availableTickets,
+          coverImage: req.file ? req.file.filename : null,
+        },
+        { new: true }
+      );
 
-    res.status(200).json({ message: `Event ${updatedEvent.title} updated successfully`, updatedEvent });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+      if (!updatedEvent) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+
+      res.status(200).json({ message: `Event ${updatedEvent.title} updated successfully`, updatedEvent });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 };
 

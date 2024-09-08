@@ -9,7 +9,7 @@ let temporaryUsers = {};
 
 const signUp = async (req, res) => {
     try {
-        let { name, email, password, role } = req.body;
+        let { name, email, phoneNumber, password, role } = req.body;
 
         if (!role) {
             role = 'user';
@@ -43,11 +43,11 @@ const signUp = async (req, res) => {
         temporaryUsers[email] = {
             name,
             email,
+            phoneNumber,
             password: hashedPassword,
             role,
             verificationCode,
         };
-        console.log(temporaryUsers)
         res.status(200).json({ message: 'Verification code sent to email' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -69,6 +69,7 @@ const verifyCode = async (req, res) => {
         const newUser = new User({
             name: userData.name,
             email: userData.email,
+            phoneNumber: userData.phoneNumber,
             password: userData.password,
             role: userData.role,
         });

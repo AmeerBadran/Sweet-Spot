@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket.model');
+const Event = require('../models/Event.model');
 const QRCode = require('qrcode');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
@@ -17,7 +18,6 @@ const generateQRCode = async (text, index) => {
     await QRCode.toFile(qrCodePath, text);
     return qrCodeName;
   } catch (err) {
-    console.error('Error generating QR Code:', err);
     throw new Error('QR Code generation failed');
   }
 };
@@ -87,6 +87,20 @@ exports.createTicket = async (req, res) => {
     if (!eventData || !userData || !userData.email || !numberOfTickets) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
+
+    const event = await Event.findById(eventData.eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    if (event.availableTickets < numberOfTickets) {
+      return res.status(200).json({ message: 'Not enough tickets available' });
+    }
+
+
+    event.availableTickets -= numberOfTickets;
+    await event.save();
+
     const tickets = await Promise.all(
       Array.from({ length: numberOfTickets }).map(async (_, i) => {
         const id = uuidv4();
@@ -101,6 +115,7 @@ exports.createTicket = async (req, res) => {
         return ticket;
       })
     );
+
 
     await sendEmail(userData.email, 'Your Event Tickets', tickets);
 
@@ -136,6 +151,25 @@ exports.getCountTickets = async (req, res) => {
   try {
     const filter = req.params.filter;
     let query = {};
+
+    if (filter === 'used') {
+      query.status = 'used';
+    } else if (filter === 'unused') {
+      query.status = 'unused';
+    }
+
+    const count = await Ticket.countDocuments(query);
+    res.status(200).json({ count });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while counting tickets' });
+  }
+};
+
+exports.getCountUserTickets = async (req, res) => {
+  try {
+    const filter = req.params.filter;
+    const userId = req.params.userId;
+    let query = { 'userData.userId': userId };
 
     if (filter === 'used') {
       query.status = 'used';

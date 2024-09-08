@@ -17,7 +17,7 @@ exports.getUserById = async (req, res) => {
 
 exports.addUserByAdmin = async (req, res) => {
   try {
-    let { name, email, password, role } = req.body;
+    let { name, email, phoneNumber, password, role } = req.body;
 
     if (!role) {
       role = 'user';
@@ -33,6 +33,7 @@ exports.addUserByAdmin = async (req, res) => {
     const newUser = new User({
       name,
       email,
+      phoneNumber,
       password: hashedPassword,
       role,
     });
