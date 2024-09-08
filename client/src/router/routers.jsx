@@ -21,6 +21,7 @@ import NotProtectdRoute from "../components/HOC/withNotProtect"
 import ProtectdRoute from "../components/HOC/withProtect"
 import AddUser from "../template/AddUser";
 import EventDetails from "../components/organism/EventDetails";
+import ServerError from "../pages/ServerError";
 
 
 const router = createBrowserRouter([
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <NotFound />,
+  },
+  {
+    path: "/server-error",
+    element: <ServerError />,
   },
 ]);
 

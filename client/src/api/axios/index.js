@@ -1,9 +1,9 @@
 import axios from "axios";
 import { store } from '../../app/store';
-//const baseURL = import.meta.env.HR_SYSTEM_BASE_URL
+//const baseURL = import.meta.env.FRONTEND_BASE_URL
 
 const axiosInstance = axios.create({
-  baseURL: 'https://sweet-spot-server.onrender.com/api',
+  baseURL: 'http://localhost:5501/api/',
   withCredentials: true,
 });
 
@@ -29,31 +29,17 @@ axiosInstance.interceptors.response.use(
   function (error) {
     if (error.response) {
       const status = error.response.status;
-
       if (status === 401) {
-
-        alert("Session expired. Please log in again.");
         window.location = "/login";
-
-        //last step now we should remove access token form its storage
-
       }
-
       if (status === 500) {
-
         //window.location = "/server-error";
-
-        // we should add server error page with image 500
       }
     } else if (error.request) {
-
       alert("Network error. Please check your connection.");
-
     } else {
-
       alert("An unexpected error occurred.");
     }
-
     return Promise.reject(error);
   }
 );

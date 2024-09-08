@@ -43,8 +43,9 @@ export default function App() {
         } else if (closestEvent.message === 'There are no upcoming events.') {
           setNoEventsMessage('There are no upcoming events.');
         }
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        console.error('Error fetching closest event:', error);
+        setNoEventsMessage('Server Error');
       }
     };
 
@@ -52,11 +53,11 @@ export default function App() {
   }, []);
 
   if (noEventsMessage) {
-    return <p>{noEventsMessage}</p>;
+    return <p className='2xmobile:text-lg text-white md:text-2xl font-black z-10 mt-7'>{noEventsMessage}</p>;
   }
 
   if (!eventDate) {
-    return <p>Loading...</p>;
+    return <p className='2xmobile:text-lg text-white md:text-2xl font-black z-10 mt-7'>Loading...</p>;
   }
 
   return (

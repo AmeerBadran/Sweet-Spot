@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
@@ -12,7 +13,7 @@ const EditEvent = ({ initialValues = {} }) => {
   const [coverImagePreview, setCoverImagePreview] = useState('');
   const eventData = location.state?.eventData || {};
   const eventId = eventData.id;
-  
+
   useEffect(() => {
     if (initialValues.coverImage) {
       setCoverImagePreview(URL.createObjectURL(initialValues.coverImage));
@@ -32,17 +33,18 @@ const EditEvent = ({ initialValues = {} }) => {
       availableTickets: eventData.availableTickets || '',
     },
     validationSchema: Yup.object({
-      // other validation rules
       date: Yup.date().required('Date is required').typeError('Date must be a valid date'),
+      // other validation rules
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
+        setSubmitting(true);  // Disable the form while submitting
         const response = await updateEvent(eventId, values); // Call the API to update the event
-        toast.success('Event updated successfully!');
-        console.log(response.data);
+        toast.success(response?.data.message || 'Event updated successfully!');
       } catch (error) {
         toast.error('Failed to update event. Please try again.');
-        console.error(error);
+      } finally {
+        setSubmitting(false);  // Re-enable the form after the submission is done
       }
     },
   });
@@ -207,9 +209,15 @@ const EditEvent = ({ initialValues = {} }) => {
           ) : null}
         </div>
 
-        <button type="submit" className="px-4 py-2 bg-base-color text-white rounded-md hover:bg-green-700">
-          Update
-        </button>
+        <div>
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-all duration-300"
+            disabled={formik.isSubmitting}  // Disable button while submitting
+          >
+            {formik.isSubmitting ? 'Updating...' : 'Update'}
+          </button>
+        </div>
       </form>
     </div>
   );

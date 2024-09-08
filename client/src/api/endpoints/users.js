@@ -13,8 +13,8 @@ export const getUserById = (userId) => {
   return axiosInstance.get(`/user/${userId}`);
 }
 
-export const addUserByAdmin = () => {
-  return axiosInstance.post(`/user/addUser`);
+export const addUserByAdmin = (userData) => {
+  return axiosInstance.post(`/user/addUser`, userData);
 }
 
 

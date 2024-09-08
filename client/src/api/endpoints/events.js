@@ -21,7 +21,11 @@ export const getEventById = (eventId) => {
 }
 
 export const updateEvent = (eventId, newData) => {
-  return axiosInstance.put(`/events/update/${eventId}`, newData);
+  return axiosInstance.put(`/events/update/${eventId}`, newData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }
 
 export const deleteEvent = (eventId) => {

@@ -4,6 +4,10 @@ export const getCountTickets = (filter) => {
   return axiosInstance.get(`/tickets/count/${filter}`);
 }
 
+export const getCountUserTickets = (filter, userId) => {
+  return axiosInstance.get(`/tickets/count/${filter}/${userId}`);
+}
+
 export const scanTicket = (qrId) => {
   return axiosInstance.post(`/tickets/scan`, { qrId });
 }

@@ -12,7 +12,7 @@ const EventDetails = () => {
   const event = location.state?.event || {};
 
   const userData = useSelector((state) => state.authData.userData);
-
+  const stop = false;
   const [ticketCount, setTicketCount] = useState(1);
   const totalPrice = ticketCount * event.price;
 
@@ -22,23 +22,25 @@ const EventDetails = () => {
 
   const handlePay = async () => {
     try {
-      const ticketData = {
-        "eventData": {
-          "eventId": event.id,
-          "title": event.title,
-          "location": event.location,
-          "date": event.date
-        },
-        "userData": {
-          "userId": userData.id,
-          "name": userData.name,
-          "email": userData.email
-        },
-        "numberOfTickets": ticketCount
+      if (stop) {
+        const ticketData = {
+          "eventData": {
+            "eventId": event.id,
+            "title": event.title,
+            "location": event.location,
+            "date": event.date
+          },
+          "userData": {
+            "userId": userData.id,
+            "name": userData.name,
+            "email": userData.email
+          },
+          "numberOfTickets": ticketCount
+        }
+        const response = await createTicket(ticketData);
+        toast.success(response.data.message)
       }
-      console.log(ticketData)
-      const response = await createTicket(ticketData);
-      toast.success(response.data.message)
+      toast.success('Unfortunately, the ticket purchase service is currently suspended.')
     } catch (error) {
       toast.error(error)
     }

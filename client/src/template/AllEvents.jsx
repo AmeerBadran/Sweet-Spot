@@ -19,7 +19,7 @@ export default function AllEvents() {
         setEventsCount(eventsRes?.data?.count || 0);
         setPageCount(Math.ceil(eventsCount / itemsPerPage))
       } catch (error) {
-        console.error("Error fetching events count:", error);
+        alert.error("Error fetching events count:", error);
       }
     };
 
@@ -30,8 +30,9 @@ export default function AllEvents() {
     const fetchEvents = async () => {
       try {
         await allEventsData(currentPage, filter);
+        
       } catch (error) {
-        console.error("Error fetching events data:", error);
+        alert.error("Error fetching events data:", error);
       }
     };
 
@@ -43,13 +44,14 @@ export default function AllEvents() {
       const response = await getAllEvents(page, filter);
       setEventsData(response?.data || []);
     } catch (error) {
-      console.error("Error fetching events data:", error);
+      toast.error("Error fetching events data:", error);
     }
   };
 
   const handleDelete = async (eventId) => {
     try {
       const response = await deleteEvent(eventId);
+      
       setEventsData((prevEventsData) => prevEventsData.filter(event => event._id !== eventId));
       toast.success(response.data.message);
     } catch (error) {

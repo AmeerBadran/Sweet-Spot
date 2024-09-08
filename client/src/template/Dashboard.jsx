@@ -28,7 +28,7 @@ export default function Dashboard() {
         setTicketsCount(ticketsRes?.data?.count || 0);
         allUsersData(1);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        alert.error("Error fetching data:", error);
       }
     };
     fetchData();
@@ -39,17 +39,21 @@ export default function Dashboard() {
       const response = await getAllUsers(page);
       setUsersData(response?.data || []);
     } catch (error) {
-      console.error("Error fetching users data:", error);
+      alert.error("Error fetching users data:", error);
     }
   };
 
   const handleDelete = async (userId) => {
-    try {
-      const response = await deleteUser(userId);
-      setUsersData((prevUsersData) => prevUsersData.filter(user => user._id !== userId));
-      toast.success(response.data.message);
-    } catch (error) {
-      toast.error(error.response?.data?.error || 'An error occurred');
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+
+    if (confirmDelete) {
+      try {
+        const response = await deleteUser(userId);
+        setUsersData((prevUsersData) => prevUsersData.filter(user => user._id !== userId));
+        toast.success(response.data.message);
+      } catch (error) {
+        alert.error(error.response?.data?.error || 'An error occurred');
+      }
     }
   };
 
@@ -88,6 +92,7 @@ export default function Dashboard() {
               <tr>
                 <th scope="col" className="px-6 py-3">Name</th>
                 <th scope="col" className="px-6 py-3">Email</th>
+                <th scope="col" className="px-6 py-3">Phone Number</th>
                 <th scope="col" className="px-6 py-3">Role</th>
                 <th scope="col" className="px-6 py-3">Action</th>
               </tr>
@@ -100,6 +105,7 @@ export default function Dashboard() {
                       {user.name}
                     </td>
                     <td className="px-6 py-4">{user.email}</td>
+                    <td className="px-6 py-4">{user.phoneNumber}</td>
                     <td className="px-6 py-4">{user.role}</td>
                     <td className="px-6 py-4">
                       <button

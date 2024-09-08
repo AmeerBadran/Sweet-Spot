@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import TicketCard from "../components/molecule/TicketCard";
 import { useEffect, useState } from "react";
-import { getCountTickets, getTicketsByUserId } from "../api/endpoints/tickets";
+import { getCountUserTickets, getTicketsByUserId } from "../api/endpoints/tickets";
 import { toast } from "react-toastify";
 import PaginationRounded from "../components/molecule/PaginationRounded";
 
@@ -17,23 +17,23 @@ export default function MyTickets() {
   useEffect(() => {
     const fetchTicketsCount = async () => {
       try {
-        const ticketsRes = await getCountTickets(filter);
+        const ticketsRes = await getCountUserTickets(filter, userData?.id);
         setTicketsCount(ticketsRes?.data?.count || 0);
         setPageCount(Math.ceil(ticketsCount / itemsPerPage))
       } catch (error) {
-        console.error("Error fetching events count:", error);
+        alert.error("Error fetching events count:", error);
       }
     };
 
     fetchTicketsCount();
-  }, [filter, ticketsCount]);
+  }, [filter, ticketsCount, userData?.id]);
 
   useEffect(() => {
     const fetchTickets = async () => {
       try {
         await getUserTickets(userData.id, currentPage, filter);
       } catch (error) {
-        console.error("Error fetching events data:", error);
+        alert.error("Error fetching events data:", error);
       }
     };
 

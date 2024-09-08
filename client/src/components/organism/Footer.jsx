@@ -7,7 +7,8 @@ export default function Footer() {
         <div className="flex flex-col justify-center 2md:flex-row border-t border-gray-500 mt-4 pt-2 2md:pt-6 text-center 2md:justify-around">
           <div className="flex justify-center">
             <p className="text-gray-700 ">Sweet Spot 2024 © All rights reserved.</p>
-            <SocialLinks />
+            
+              <SocialLinks />
           </div>
           <div className="flex gap-5 justify-center">
             <p className="text-gray-700 ">Developed By Nova</p>

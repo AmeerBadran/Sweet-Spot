@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 import PaginationRounded from '../components/molecule/PaginationRounded';
 import { getAllEvents, getCountEvents } from '../api/endpoints/events';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import bg_image from "../assets/images/6a60863f-851e-4026-a8a5-218b429fe327.jpg"
 AOS.init();
 
@@ -31,7 +30,7 @@ export default function Home() {
         setEventsCount(eventsRes?.data?.count || 0);
         setPageCount(Math.ceil(eventsCount / itemsPerPage))
       } catch (error) {
-        console.error("Error fetching events count:", error);
+        alert.error("Error fetching events count:", error);
       }
     };
 
@@ -43,7 +42,7 @@ export default function Home() {
       try {
         await allEventsData(currentPage, filter);
       } catch (error) {
-        toast.error("Error fetching events data:", error);
+        alert.error("Error fetching events data:", error);
       }
     };
 
@@ -55,7 +54,7 @@ export default function Home() {
       const response = await getAllEvents(page, filter);
       setEventsData(response?.data || []);
     } catch (error) {
-      toast.error("Error fetching events data:", error);
+      alert.error("Error fetching events data:", error);
     }
   };
 
@@ -141,9 +140,10 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <div className="second-section flex max-w-[1300px] mx-auto my-14 gap-6 p-4 overflow-hidden">
+      <div className="second-section flex max-w-[1300px] mx-auto pt-14 pb-28 gap-6 p-4 overflow-hidden">
         <ContactForm />
       </div>
+
     </div>
   );
 }
