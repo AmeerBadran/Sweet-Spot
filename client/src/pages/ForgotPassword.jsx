@@ -1,8 +1,10 @@
 import loginImg from "../assets/images/login-img.jpg"
 import logo from "../assets/images/projectMainLogo.png"
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 import SpeedDialComponent from "../components/organism/SpeedDialComponent";
-export default function LogIn() {
+import ForgotPasswordForm from "../components/organism/ForgotPasswordForm";
+
+export default function ForgotPassword() {
   return (
     <div className="grid grid-cols-1 2md:grid-cols-2 min-h-screen">
       <SpeedDialComponent />
@@ -24,10 +26,9 @@ export default function LogIn() {
 
         <div className="w-full">
           <h2 className="text-2xl font-semibold text-start">Sign into Your Account</h2>
-          
-          <Outlet />
+          <ForgotPasswordForm />
         </div>
       </div>
     </div >
-  );
+  )
 }

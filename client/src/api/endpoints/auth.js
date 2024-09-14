@@ -27,5 +27,19 @@ export const verifyCode = (verificationData) => {
 export const refresh = () => {
   return axiosInstance.post('/auth/refresh', {}, {
     withCredentials: true
-  });;
+  });
 }
+
+export const sendForgotPasswordEmail = (emailData) => {
+  const email = emailData.email
+  return axiosInstance.post('/auth/forgotPassword', { email }, {
+    withCredentials: true
+  });
+}
+
+export const sendResetPasswordRequest = (token, passwordData) => {
+  const password = passwordData.newPassword
+  return axiosInstance.post('/auth/resetPassword', { token, password }, {
+    withCredentials: true
+  });
+};

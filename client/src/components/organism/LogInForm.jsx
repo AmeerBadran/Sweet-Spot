@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { RiEyeCloseFill } from 'react-icons/ri';
 import { FaRegEye } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { saveAuthData } from '../../features/authData/authDataSlice';
 import { logIn } from '../../api/endpoints/auth';
@@ -17,10 +17,14 @@ const LoginForm = () => {
   const callLogIn = async (loginData) => {
     try {
       const response = await logIn(loginData);
-      return response;
+      if (response.data.success) {
+        return response;
+      } else {
+        return { error: response.data.message || 'Login failed' };
+      }
+
     } catch (error) {
-      toast.error("Login failed:", error);
-      return { error: "Login failed. Please try again." };
+      return { error: error };
     }
   }
 
@@ -102,13 +106,19 @@ const LoginForm = () => {
               className="text-red-500 text-sm mt-1"
             />
           </div>
-          <div className="flex flex-col items-start gap-7 mt-4">
-            <button
-              type="button"
+          <div className="flex flex-col xmobile:flex-row xmobile:justify-between items-start gap-7 mt-4">
+            <Link
+              to='/signUp'
+              className="text-sm text-base-color font-bold hover:underline hover:text-blue-500"
+            >
+              Create Account
+            </Link>
+            <Link
+              to='/logIn/forgot-password'
               className="text-sm text-black font-bold hover:underline hover:text-base-color"
             >
               Forgot Password?
-            </button>
+            </Link>
           </div>
           <button
             type="submit"

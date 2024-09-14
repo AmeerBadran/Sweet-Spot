@@ -88,19 +88,27 @@ const logIn = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required' });
+            return res.status(200).json({
+                success: false,
+                message: 'Email and password are required'
+            });
         }
 
         const foundUser = await User.findOne({ email });
         if (!foundUser) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(200).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
         }
 
         const isPasswordValid = await bcrypt.compare(password, foundUser.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(200).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
         }
-
         const accessToken = jwt.sign(
             {
                 id: foundUser._id,
@@ -109,8 +117,9 @@ const logIn = async (req, res) => {
                 role: foundUser.role
             },
             process.env.JWT_ACCESS_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '1d' }
         );
+
 
         const refreshToken = jwt.sign(
             {
@@ -131,6 +140,7 @@ const logIn = async (req, res) => {
         });
 
         res.status(200).json({
+            success: true,
             message: 'Login successful',
             accessToken,
             userData: {
@@ -156,7 +166,7 @@ const refresh = async (req, res) => {
                     const accessToken = jwt.sign(
                         { id: decoded.id, name: decoded.name, email: decoded.email, role: decoded.role },
                         process.env.JWT_ACCESS_SECRET,
-                        { expiresIn: '1h' }
+                        { expiresIn: '1d' }
                     );
                     return res.status(200).json({
                         message: 'Token refreshed successfully',
@@ -182,9 +192,108 @@ const logOut = (req, res) => {
     res.cookie('SweetSpotToken', null, {
         httpOnly: true,
         secure: true,
+        sameSite: 'None',
         maxAge: 1,
     });
     res.status(200).json({ message: 'Logged out successfully' });
+};
+
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email is required'
+            });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        // Generate reset token (valid for 1 hour)
+        const resetToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.JWT_RESET_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        // Email content
+        const resetLink = `http://localhost:5173/logIn/reset-password?token=${resetToken}`;
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: user.email,
+            subject: 'Password Reset',
+            html: `<p>You requested a password reset. Click <a href="${resetLink}">here</a> to reset your password.</p>`
+        };
+
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        // Send the email
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Error sending email'
+                });
+            }
+            res.status(200).json({
+                success: true,
+                message: 'Password reset email sent',
+            });
+        });
+    } catch (error) {
+        console.error('Error in forgotPassword:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body; // Get token and newPassword from the request body
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: 'Token is required'
+            });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.HASH_PASS));
+
+        // Update the user's password
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password has been reset successfully',
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 module.exports = {
@@ -192,5 +301,7 @@ module.exports = {
     logIn,
     refresh,
     logOut,
-    verifyCode
+    verifyCode,
+    forgotPassword,
+    resetPassword
 };

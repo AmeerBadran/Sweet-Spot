@@ -62,7 +62,7 @@ exports.getAllEvents = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
-      
+
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -146,5 +146,21 @@ exports.updateEventById = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   });
+};
+
+exports.getAllEventsForScanner = async (req, res) => {
+  try {
+    const now = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+
+    let query = { date: { $gte: yesterday } };
+
+    const events = await Event.find(query).sort({ date: 1 }).select('_id title');
+
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 

@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const generateQRCode = async (text, index) => {
+const generateQRCode = async (text, qrEventId, index) => {
   const qrCodeDir = path.join(__dirname, '..', 'uploads', 'qrcodes');
   if (!fs.existsSync(qrCodeDir)) {
     fs.mkdirSync(qrCodeDir, { recursive: true });
@@ -14,8 +14,10 @@ const generateQRCode = async (text, index) => {
   const qrCodeName = `ticket_${index}.png`;
   const qrCodePath = path.join(qrCodeDir, qrCodeName);
 
+  const qrCodeText = `Text: ${text}\nEvent ID: ${qrEventId}`;
+
   try {
-    await QRCode.toFile(qrCodePath, text);
+    await QRCode.toFile(qrCodePath, qrCodeText);
     return qrCodeName;
   } catch (err) {
     throw new Error('QR Code generation failed');
@@ -104,7 +106,7 @@ exports.createTicket = async (req, res) => {
     const tickets = await Promise.all(
       Array.from({ length: numberOfTickets }).map(async (_, i) => {
         const id = uuidv4();
-        const qrCodePath = await generateQRCode(`${id}`, id);
+        const qrCodePath = await generateQRCode(`${id}`, eventData.eventId, id);
         const ticket = new Ticket({
           qrID: id,
           userData,
@@ -128,6 +130,7 @@ exports.createTicket = async (req, res) => {
 exports.scanTicket = async (req, res) => {
   try {
     const { qrId } = req.body;
+    
     const ticket = await Ticket.findOne({ qrID: qrId });
     if (!ticket) {
       return res.status(200).json({ message: 'Ticket not found' });

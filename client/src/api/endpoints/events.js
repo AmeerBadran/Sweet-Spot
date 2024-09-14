@@ -12,6 +12,10 @@ export const getAllEvents = (page, filter) => {
   return axiosInstance.get(`/events/all/${page}/${filter}`);
 }
 
+export const getAllEventsForScanner = () => {
+  return axiosInstance.get(`/events/getEventsForScanner`);
+}
+
 export const getCountEvents = (filter) => {
   return axiosInstance.get(`/events/count/${filter}`);
 }

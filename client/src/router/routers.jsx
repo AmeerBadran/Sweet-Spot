@@ -22,7 +22,9 @@ import ProtectdRoute from "../components/HOC/withProtect"
 import AddUser from "../template/AddUser";
 import EventDetails from "../components/organism/EventDetails";
 import ServerError from "../pages/ServerError";
-
+import LoginForm from "../components/organism/LogInForm";
+import ForgotPasswordForm from "../components/organism/ForgotPasswordForm";
+import ResetPasswordForm from "../components/organism/ResetPasswordForm";
 
 const router = createBrowserRouter([
   {
@@ -88,9 +90,21 @@ const router = createBrowserRouter([
       },
       {
         path: "logIn",
-        element: (
-          <NotProtectdRoute path="logIn" element={<LogIn />} />
-        ),
+        element: <NotProtectdRoute element={<LogIn />} />,
+        children: [
+          {
+            index: true,
+            element: <LoginForm />,
+          },
+          {
+            path: "forgot-password",
+            element: <ForgotPasswordForm />,
+          },
+          {
+            path: "reset-password",
+            element: <ResetPasswordForm />,
+          }
+        ]
       },
       {
         path: "signUp",
