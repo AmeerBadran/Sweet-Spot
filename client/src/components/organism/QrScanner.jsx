@@ -28,13 +28,14 @@ const QrScanner = () => {
       setCameraEnabled(false);
       try {
         const rawValue = result[0].rawValue;
-
+  
         const eventIdMatch = rawValue.match(/Event ID:\s*([^\s]+)/);
         const eventId = eventIdMatch ? eventIdMatch[1] : null;
-
+  
         const textMatch = rawValue.match(/Text:\s*([^\n]+)/);
         const text = textMatch ? textMatch[1] : null;
-        if (selectedEvent) {
+  
+        if (selectedEvent) { // Use the current selectedEvent value directly
           if (eventId === selectedEvent) {
             try {
               const response = await scanTicket(text);
@@ -45,7 +46,7 @@ const QrScanner = () => {
           } else {
             setScanResult("This ticket is not available for this event.");
           }
-        }else{
+        } else {
           setScanResult("Select the event you want to scan.");
         }
       } catch (error) {
