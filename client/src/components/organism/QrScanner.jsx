@@ -1,5 +1,5 @@
 import { Scanner } from '@yudiel/react-qr-scanner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { scanTicket } from '../../api/endpoints/tickets';
 import { getAllEventsForScanner } from '../../api/endpoints/events';
 import { toast } from 'react-toastify';
@@ -9,6 +9,11 @@ const QrScanner = () => {
   const [scanResult, setScanResult] = useState(null);
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState('');
+  const selectedEventRef = useRef(''); // create a reference for selectedEvent
+
+  useEffect(() => {
+    selectedEventRef.current = selectedEvent; // update the reference when selectedEvent changes
+  }, [selectedEvent]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -28,15 +33,17 @@ const QrScanner = () => {
       setCameraEnabled(false);
       try {
         const rawValue = result[0].rawValue;
-  
+
         const eventIdMatch = rawValue.match(/Event ID:\s*([^\s]+)/);
         const eventId = eventIdMatch ? eventIdMatch[1] : null;
-  
+
         const textMatch = rawValue.match(/Text:\s*([^\n]+)/);
         const text = textMatch ? textMatch[1] : null;
-  
-        if (selectedEvent) { // Use the current selectedEvent value directly
-          if (eventId === selectedEvent) {
+
+        const currentSelectedEvent = selectedEventRef.current; // use the current reference value
+
+        if (currentSelectedEvent) {
+          if (eventId === currentSelectedEvent) {
             try {
               const response = await scanTicket(text);
               setScanResult(response.data.message);
@@ -64,12 +71,11 @@ const QrScanner = () => {
   };
 
   const handleSelectChange = (event) => {
-    setSelectedEvent(event.target.value);
+    setSelectedEvent(event.target.value); // update the selectedEvent state
   };
 
   return (
     <div className="text-center max-w-[600px]">
-      {/* إضافة عنصر select لاختيار الحدث */}
       <div className="mb-2">
         <select
           value={selectedEvent}
