@@ -25,6 +25,7 @@ import ServerError from "../pages/ServerError";
 import LoginForm from "../components/organism/LogInForm";
 import ForgotPasswordForm from "../components/organism/ForgotPasswordForm";
 import ResetPasswordForm from "../components/organism/ResetPasswordForm";
+import Tickets from "../template/Tickets";
 
 const router = createBrowserRouter([
   {
@@ -36,20 +37,20 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (<Home />),
+            element: <Home />,
           },
 
           {
             path: "/myTickets",
-            element: (<ProtectdRoute path="/myTickets" element={<MyTickets />} />),
+            element: (
+              <ProtectdRoute path="/myTickets" element={<MyTickets />} />
+            ),
           },
         ],
       },
       {
         path: "/admin",
-        element: (
-          <ProtectdRoute path="/admin" element={<Admin />} />
-        ),
+        element: <ProtectdRoute path="/admin" element={<Admin />} />,
         children: [
           {
             index: true,
@@ -69,24 +70,27 @@ const router = createBrowserRouter([
           },
           {
             path: "allEvents/editEvent",
-            element: (<EditEvent />),
+            element: <EditEvent />,
           },
           {
             path: "addUser",
             element: <AddUser />,
           },
-
+          {
+            path: "allTickets",
+            element: <Tickets />,
+          },
         ],
       },
       {
         path: "/qrScanner",
-        element: (
-          <ProtectdRoute path="/qrScanner" element={<ScannerPage />} />
-        ),
+        element: <ProtectdRoute path="/qrScanner" element={<ScannerPage />} />,
       },
       {
-        path: '/eventDetails',
-        element: (<ProtectdRoute path="/eventDetails" element={<EventDetails />} />),
+        path: "/eventDetails",
+        element: (
+          <ProtectdRoute path="/eventDetails" element={<EventDetails />} />
+        ),
       },
       {
         path: "logIn",
@@ -103,12 +107,12 @@ const router = createBrowserRouter([
           {
             path: "reset-password",
             element: <ResetPasswordForm />,
-          }
-        ]
+          },
+        ],
       },
       {
         path: "signUp",
-        element: (<NotProtectdRoute path="signUp" element={<SignUp />} />),
+        element: <NotProtectdRoute path="signUp" element={<SignUp />} />,
       },
     ],
   },

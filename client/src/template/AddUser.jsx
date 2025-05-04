@@ -49,7 +49,7 @@ const AddUser = () => {
   return (
     <div className="lg:col-span-3 w-full mx-auto bg-white rounded-lg lg:ml-6 border">
       <div className='p-6 border rounded-t-lg'>
-        <h1 className='text-2xl font-semibold text-blue-900'>All Events</h1>
+        <h1 className='text-2xl font-semibold text-blue-900'>Add User</h1>
       </div>
       <form onSubmit={formik.handleSubmit} className="w-full flex flex-col gap-4 mx-auto p-6">
         <div>

@@ -5,22 +5,22 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-// Import routes
+
 const authRoute = require('./routes/Auth.route.js');
 const eventRoutes = require('./routes/Event.route.js');
 const userRoutes = require('./routes/User.route.js');
 const ticketsRoutes = require('./routes/Ticket.route.js');
 const contactRoutes = require('./routes/Contact.route.js');
-// Load environment variables
+
 dotenv.config();
 
 const app = express();
 app.use(cookieParser());
 
-// CORS options - adjust origin for Render or dynamic front-end URL
+
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',  // Replace with your Render frontend URL
-    methods: 'GET,PUT,POST,DELETE',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: 'GET,PUT,POST,DELETE,PATCH',
     credentials: true,
     optionsSuccessStatus: 204
 };
@@ -29,12 +29,13 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+
 // Set up the port from environment variables
 const PORT = process.env.PORT || 5501;
 
 // Database connection
 mongoose.connect(process.env.MONGO_URI)
-//mongoose.connect('mongodb+srv://Sweet_Spot:Sweet_Spotqpzm1223@sweet-spot.z8wmo.mongodb.net/?retryWrites=true&w=majority&appName=Sweet-Spot')
+    //mongoose.connect('mongodb+srv://Sweet_Spot:Sweet_Spotqpzm1223@sweet-spot.z8wmo.mongodb.net/?retryWrites=true&w=majority&appName=Sweet-Spot')
     .then(() => {
         app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
         console.log('Connected to database!');

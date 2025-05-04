@@ -4,12 +4,13 @@ import { store } from '../../app/store';
 
 const axiosInstance = axios.create({
   baseURL: 'https://sweet-spot-server.onrender.com/api',
+  //baseURL: 'http://localhost:5501/api',
   withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const state = store.getState(); // Access Redux state directly
+    const state = store.getState();
     const accessToken = state.authData?.accessToken;
 
     if (accessToken) {

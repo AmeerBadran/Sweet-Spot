@@ -14,7 +14,10 @@ const signUp = async (req, res) => {
         if (!role) {
             role = 'user';
         }
-
+        const existingName = await User.findOne({ name });
+        if (existingName) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });

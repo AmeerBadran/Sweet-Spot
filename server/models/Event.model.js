@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
@@ -8,7 +9,7 @@ const EventSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   capacity: { type: Number, required: true },
   availableTickets: { type: Number, required: true },
-  coverImage: { type: String, required: true }
+  coverImage: { type: String, required: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Event', EventSchema);

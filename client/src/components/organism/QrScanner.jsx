@@ -1,18 +1,19 @@
-import { Scanner } from '@yudiel/react-qr-scanner';
-import { useState, useEffect, useRef } from 'react';
-import { scanTicket } from '../../api/endpoints/tickets';
-import { getAllEventsForScanner } from '../../api/endpoints/events';
-import { toast } from 'react-toastify';
+
+import { Scanner } from "@yudiel/react-qr-scanner";
+import { useState, useEffect, useRef } from "react";
+import { scanTicket } from "../../api/endpoints/tickets";
+import { getAllEventsForScanner } from "../../api/endpoints/events";
+import { toast } from "react-toastify";
 
 const QrScanner = () => {
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [scanResult, setScanResult] = useState(null);
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState('');
-  const selectedEventRef = useRef(''); // create a reference for selectedEvent
+  const [selectedEvent, setSelectedEvent] = useState("");
+  const selectedEventRef = useRef("");
 
   useEffect(() => {
-    selectedEventRef.current = selectedEvent; // update the reference when selectedEvent changes
+    selectedEventRef.current = selectedEvent;
   }, [selectedEvent]);
 
   useEffect(() => {
@@ -20,11 +21,11 @@ const QrScanner = () => {
       try {
         const response = await getAllEventsForScanner();
         setEvents(response.data);
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        toast.error('Error fetching events:', error);
+        toast.error("Error fetching events");
       }
     };
-
     fetchEvents();
   }, []);
 
@@ -40,7 +41,7 @@ const QrScanner = () => {
         const textMatch = rawValue.match(/Text:\s*([^\n]+)/);
         const text = textMatch ? textMatch[1] : null;
 
-        const currentSelectedEvent = selectedEventRef.current; // use the current reference value
+        const currentSelectedEvent = selectedEventRef.current;
 
         if (currentSelectedEvent) {
           if (eventId === currentSelectedEvent) {
@@ -48,13 +49,15 @@ const QrScanner = () => {
               const response = await scanTicket(text);
               setScanResult(response.data.message);
             } catch (ticketError) {
-              setScanResult("Error scanning the ticket: " + ticketError.message);
+              setScanResult(
+                "Error scanning the ticket: " + ticketError.message
+              );
             }
           } else {
             setScanResult("This ticket is not available for this event.");
           }
         } else {
-          setScanResult("Select the event you want to scan.");
+          setScanResult("Please select an event first.");
         }
       } catch (error) {
         setScanResult("Error processing scan data: " + error.message);
@@ -71,33 +74,61 @@ const QrScanner = () => {
   };
 
   const handleSelectChange = (event) => {
-    setSelectedEvent(event.target.value); // update the selectedEvent state
+    setSelectedEvent(event.target.value);
   };
 
   return (
-    <div className="text-center max-w-[600px]">
-      <div className="mb-2">
-        <select
-          value={selectedEvent}
-          onChange={handleSelectChange}
-          className="border p-2 rounded"
-        >
-          <option value="">Select an Event</option>
-          {events.map((event) => (
-            <option key={event._id} value={event._id}>
-              {event.title}
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] flex flex-col items-center justify-center px-4 py-10">
+      <div className="w-full max-w-xl bg-white/5 backdrop-blur-lg border border-white/10 shadow-2xl rounded-3xl p-6 sm:p-10 text-white relative">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-center mb-6 text-teal-400 tracking-tight">
+          🎫 QR Ticket Scanner
+        </h1>
+
+        <div className="mb-6">
+          <label className="block text-sm font-semibold mb-2 text-white/80">
+            Select Event
+          </label>
+          <select
+            value={selectedEvent}
+            onChange={handleSelectChange}
+            className="w-full p-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-teal-400"
+          >
+            <option value="" className="text-black">
+              -- Choose an Event --
             </option>
-          ))}
-        </select>
+            {events.map((event) => (
+              <option key={event._id} value={event._id} className="text-black">
+                {event.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="text-center mb-4">
+          <p
+            className={`text-xl sm:text-2xl font-bold ${
+              scanResult === "Ticket used successfully"
+                ? "text-green-400"
+                : scanResult === "Ticket already used" ||
+                  scanResult === "Ticket not found"
+                ? "text-red-500"
+                : "text-yellow-400"
+            }`}
+          >
+            {scanResult ? `"${scanResult}"` : "Please scan a QR code"}
+          </p>
+        </div>
+
+        <div className="rounded-xl overflow-hidden border-2 border-dashed border-white/20">
+          {cameraEnabled ? (
+            <Scanner onScan={handleScan} onError={handleError} />
+          ) : (
+            <div className="flex items-center justify-center h-64 text-white/60 text-lg">
+              Activating camera...
+            </div>
+          )}
+        </div>
       </div>
-      <p className={`text-3xl font-black mb-4 ${scanResult === 'Ticket used successfully' ? ('text-green-500') : (scanResult === 'Ticket already used' || scanResult === 'Ticket not found') ? ('text-red-500') : ''}`}>
-        {scanResult ? `"${scanResult}"` : 'Scan QR Code'}
-      </p>
-      {cameraEnabled ? (
-        <Scanner onScan={handleScan} onError={handleError} />
-      ) : (
-        <p className='text-2xl'>Open Your Camera</p>
-      )}
     </div>
   );
 };

@@ -1,12 +1,20 @@
 const Event = require('../models/Event.model');
-const { uploadUserCoverImage } = require('../middleware/multerConfig');
+const { uploadUserCoverImage, uploadToCloudinary } = require('../middleware/multerConfig');
 
 exports.createEvent = async (req, res) => {
   uploadUserCoverImage(req, res, async (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
+
     try {
+      let imageUrl = null;
+
+      if (req.file) {
+        const uploadResult = await uploadToCloudinary(req.file.buffer, 'eventsImage');
+        imageUrl = uploadResult.secure_url;
+      }
+
       const newEvent = new Event({
         title: req.body.title,
         description: req.body.description,
@@ -15,15 +23,17 @@ exports.createEvent = async (req, res) => {
         price: req.body.price,
         capacity: req.body.capacity,
         availableTickets: req.body.capacity,
-        coverImage: req.file ? req.file.filename : null,
+        coverImage: imageUrl,
       });
+
       await newEvent.save();
       res.status(201).json({ message: `Event ${req.body.title} Created Successfully` });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
-}
+};
+
 exports.getCountEvents = async (req, res) => {
   try {
     const filter = req.params.filter;
@@ -77,7 +87,7 @@ exports.getClosestEvent = async (req, res) => {
       .sort({ date: 1 });
 
     if (!closestEvent) {
-      return res.status(404).json({ message: 'There are no upcoming events.' });
+      return res.status(200).json({ message: 'There are no future events.' });
     }
 
     res.status(200).json(closestEvent);
@@ -121,19 +131,32 @@ exports.updateEventById = async (req, res) => {
     if (err) {
       return res.status(400).json({ message: err.message });
     }
+
     try {
+      let imageUrl = null;
+
+      if (req.file) {
+        const uploadResult = await uploadToCloudinary(req.file.buffer, 'eventsImage');
+        imageUrl = uploadResult.secure_url;
+      }
+
+      const updateData = {
+        title: req.body.title,
+        description: req.body.description,
+        date: req.body.date,
+        location: req.body.location,
+        price: req.body.price,
+        capacity: req.body.capacity,
+        availableTickets: req.body.availableTickets,
+      };
+
+      if (imageUrl) {
+        updateData.coverImage = imageUrl;
+      }
+
       const updatedEvent = await Event.findByIdAndUpdate(
         req.params.id,
-        {
-          title: req.body.title,
-          description: req.body.description,
-          date: req.body.date,
-          location: req.body.location,
-          price: req.body.price,
-          capacity: req.body.capacity,
-          availableTickets: req.body.availableTickets,
-          coverImage: req.file ? req.file.filename : null,
-        },
+        updateData,
         { new: true }
       );
 
@@ -141,7 +164,10 @@ exports.updateEventById = async (req, res) => {
         return res.status(404).json({ message: 'Event not found' });
       }
 
-      res.status(200).json({ message: `Event ${updatedEvent.title} updated successfully`, updatedEvent });
+      res.status(200).json({
+        message: `Event ${updatedEvent.title} updated successfully`,
+        updatedEvent,
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

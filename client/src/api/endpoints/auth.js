@@ -3,7 +3,7 @@ import axiosInstance from "../axios";
 export const logIn = (loginData) => {
   return axiosInstance.post('/auth/logIn', loginData, {
     withCredentials: true
-  });;
+  });
 }
 
 export const logOut = () => {

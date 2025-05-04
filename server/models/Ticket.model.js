@@ -1,20 +1,13 @@
+
 const mongoose = require('mongoose');
 
 const TicketSchema = new mongoose.Schema({
   qrID: { type: String, required: true, unique: true },
-  eventData: {
-    eventId: { type: String, required: true },
-    title: { type: String, required: true },
-    location: { type: String, required: true },
-    date: { type: Date, required: true },
-  },
-  userData: {
-    userId: { type: String, required: true },
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-  },
+  event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   qrCode: { type: String, required: true },
-  status: { type: String, default: 'unused' },
+  status: { type: String, enum: ['unused', 'used'], default: 'unused' },
+  paid: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Ticket', TicketSchema);

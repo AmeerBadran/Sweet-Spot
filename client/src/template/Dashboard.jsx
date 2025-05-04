@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import PaginationRounded from "../components/molecule/PaginationRounded";
 import { getCountEvents } from "../api/endpoints/events";
 import { getCountTickets } from "../api/endpoints/tickets";
+import { useSelector } from "react-redux";
 
 export default function Dashboard() {
   const [usersData, setUsersData] = useState([]);
@@ -14,7 +15,7 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const pageCount = Math.ceil(usersCount / itemsPerPage);
-
+const user = useSelector((state) => state.authData.userData);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -71,15 +72,17 @@ export default function Dashboard() {
       </div>
 
       <div className="bg-white p-6 rounded-lg divide-y border overflow-x-auto">
-        <h2 className="text-2xl font-semibold text-blue-900 mb-4">Admin Data</h2>
+        <h2 className="text-2xl font-semibold text-blue-900 mb-4">
+          Admin Data
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
           <div>
             <p className="text-gray-900 font-semibold">Name</p>
-            <p className="text-lg text-gray-600">studentdemo</p>
+            <p className="text-lg text-gray-600">{user.name}</p>
           </div>
           <div>
             <p className="text-gray-900 font-semibold">Email</p>
-            <p className="text-lg text-gray-600">studentdemo@example.com</p>
+            <p className="text-lg text-gray-600">{user.email}</p>
           </div>
         </div>
       </div>
@@ -90,18 +93,31 @@ export default function Dashboard() {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">Name</th>
-                <th scope="col" className="px-6 py-3">Email</th>
-                <th scope="col" className="px-6 py-3">Phone Number</th>
-                <th scope="col" className="px-6 py-3">Role</th>
-                <th scope="col" className="px-6 py-3">Action</th>
+                <th scope="col" className="px-6 py-3">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Email
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Phone Number
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Role
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {usersData.length > 0 ? (
                 usersData.map((user) => (
                   <tr key={user._id} className="bg-white border-b">
-                    <td scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    <td
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    >
                       {user.name}
                     </td>
                     <td className="px-6 py-4">{user.email}</td>
@@ -120,7 +136,10 @@ export default function Dashboard() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan="4"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     No users found.
                   </td>
                 </tr>
@@ -128,12 +147,15 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
-        {usersData.length > 0 &&
+        {usersData.length > 0 && (
           <div className="mx-auto">
-            <PaginationRounded count={pageCount} page={currentPage} onChange={handlePagination} />
+            <PaginationRounded
+              count={pageCount}
+              page={currentPage}
+              onChange={handlePagination}
+            />
           </div>
-        }
-
+        )}
       </div>
     </div>
   );

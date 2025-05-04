@@ -1,38 +1,41 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
+const streamifier = require('streamifier');
 
-const ensureDirExists = (dir) => {
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
+const uploadToCloudinary = async (buffer, folder) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: folder || 'eventsImage',
+                resource_type: 'image'
+            },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        streamifier.createReadStream(buffer).pipe(stream);
+    });
 };
 
-const storage1 = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '../uploads/eventsImage');
-        ensureDirExists(uploadPath);
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
+const storage = multer.memoryStorage(); // تخزين في الذاكرة بدلاً من القرص
 
 const uploadUserCoverImage = multer({
-    storage: storage1,
-    limits: { fileSize: 15 * 1024 * 1024 }, // 5 MB limit
+    storage,
+    limits: { fileSize: 15 * 1024 * 1024 }, // 15 MB
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png/;
         const mimetype = filetypes.test(file.mimetype);
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const extname = filetypes.test(file.originalname.toLowerCase());
 
         if (mimetype && extname) {
             return cb(null, true);
         }
-        cb(new Error('File upload only supports the following filetypes - ' + filetypes));
+        cb(new Error('Only JPEG, JPG, and PNG files are allowed.'));
     }
 }).single('coverImage');
 
-
-module.exports = { uploadUserCoverImage };
+module.exports = {
+    uploadUserCoverImage,
+    uploadToCloudinary
+};

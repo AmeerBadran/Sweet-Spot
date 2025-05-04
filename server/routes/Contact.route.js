@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const { sendContactForm } = require('../controller/contact.controller')
+const { sendContactForm, getContactData } = require('../controller/contact.controller')
 
-router.post('/', sendContactForm)
+router.post('/:id', sendContactForm)
+router.get('/', getContactData)
 
 module.exports = router
