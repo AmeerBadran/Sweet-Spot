@@ -357,7 +357,7 @@ exports.getAllTicketsWithFilter = async (req, res) => {
     const total = await Ticket.countDocuments(query);
 
     const tickets = await Ticket.find(query)
-      .populate('user', 'name email')
+      .populate('user', 'name email phoneNumber')
       .populate('event', 'title date location')
       .skip(skip)
       .limit(limit)

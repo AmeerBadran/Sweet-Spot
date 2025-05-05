@@ -3,8 +3,7 @@ import { store } from '../../app/store';
 //const baseURL = import.meta.env.FRONTEND_BASE_URL
 
 const axiosInstance = axios.create({
-  baseURL: 'https://sweet-spot-server.onrender.com/api',
-  //baseURL: 'http://localhost:5501/api',
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -23,27 +22,6 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   });
 
-// axiosInstance.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   function (error) {
-//     if (error.response) {
-//       const status = error.response.status;
-//       if (status === 400) {
-//         window.location = "/login";
-//       }
-//       if (status === 500) {
-//         window.location = "/server-error";
-//       }
-//     } else if (error.request) {
-//       alert("Network error. Please check your connection.");
-//     } else {
-//       alert("An unexpected error occurred.");
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 
 export default axiosInstance;
 

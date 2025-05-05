@@ -122,7 +122,7 @@ export default function Tickets() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
                 <th className="px-6 py-3">User</th>
-                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Phone</th>
                 <th className="px-6 py-3">Event</th>
                 <th className="px-6 py-3">Date</th>
                 <th className="px-6 py-3">Location</th>
@@ -135,7 +135,7 @@ export default function Tickets() {
                 ticketsData.map((ticket) => (
                   <tr key={ticket._id} className="bg-white border-b">
                     <td className="px-6 py-4">{ticket.user?.name}</td>
-                    <td className="px-6 py-4">{ticket.user?.email}</td>
+                    <td className="px-6 py-4">{ticket.user?.phoneNumber}</td>
                     <td className="px-6 py-4">{ticket.event?.title}</td>
                     <td className="px-6 py-4">
                       {new Date(ticket.event?.date).toLocaleDateString()}

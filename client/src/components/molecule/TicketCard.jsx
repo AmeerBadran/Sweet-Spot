@@ -1,4 +1,11 @@
 /* eslint-disable react/prop-types */
+import {
+  FiCalendar,
+  FiMapPin,
+  FiTag,
+  FiCheckCircle,
+  FiXCircle,
+} from "react-icons/fi";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -14,41 +21,34 @@ function formatDate(dateString) {
 }
 
 function TicketCard({ image, title, date, status, location }) {
-  console.log(image);
   return (
-    <div className={` p-3 border bg-slate-200 rounded-xl gap-4 relative`}>
-      <img
-        src={image}
-        alt={title}
-        className="object-cover rounded-t-lg w-full xl:min-w-80"
-      />
-      <div className="text-black mt-4 w-full flex flex-col justify-between text-center overflow-y-auto">
-        <div>
-          <h5 className="mb-2 text-xl 2xmobile:text-2xl font-bold tracking-tight">
-            Event: {title}
-          </h5>
-          <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">
-            Date: {formatDate(date)}
-          </p>
-          <p className="mb-2 text-sm 2xmobile:text-base font-semibold tracking-tight">
-            Location: {location}
-          </p>
+    <div className="bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300 max-w-sm mx-auto">
+      <img src={image} alt={title} className="w-full h-72 object-cover" />
+      <div className="p-5 text-gray-800 flex flex-col gap-4">
+        <div className="flex items-center gap-2 text-lg font-bold text-primary-600">
+          <FiTag className="text-my-color" />
+          <span className="truncate">Event: {title}</span>
         </div>
-        <div className="w-full flex flex-col 2xmobile:flex-row justify-center gap-2 items-center">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FiCalendar className="text-sec-color-100" />
+          <span>Date: {formatDate(date)}</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FiMapPin className="text-sec-color-100" />
+          <span>Location: {location}</span>
+        </div>
+
+        <div className="flex justify-center">
           {status === "unused" ? (
-            <span
-              className={`py-1 px-3 border rounded-full text-sm bg-green-500 text-white`}
-            >
+            <span className="flex items-center gap-2 text-sm bg-green-100 text-green-700 px-4 py-1 rounded-full font-semibold">
+              <FiCheckCircle />
               Unused
             </span>
           ) : (
-            status === "used" && (
-              <span
-                className={`py-1 px-3 border rounded-full text-sm bg-red-500 text-white`}
-              >
-                Used
-              </span>
-            )
+            <span className="flex items-center gap-2 text-sm bg-red-100 text-red-600 px-4 py-1 rounded-full font-semibold">
+              <FiXCircle />
+              Used
+            </span>
           )}
         </div>
       </div>

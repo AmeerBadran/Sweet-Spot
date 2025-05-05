@@ -50,7 +50,6 @@ export default function App() {
       try {
         const response = await getClosestEvent();
         const closestEvent = response.data;
-        console.log(closestEvent);
         if (
           closestEvent &&
           closestEvent.date
