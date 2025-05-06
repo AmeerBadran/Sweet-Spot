@@ -127,9 +127,9 @@ export default function Tickets() {
                 <th className="px-6 py-3">Date</th>
                 <th className="px-6 py-3">Location</th>
                 <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Paid</th>
                 <th className="px-6 py-3">For</th>
                 <th className="px-6 py-3">Used</th>
+                <th className="px-6 py-3">Paid</th>
               </tr>
             </thead>
             <tbody>
