@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 const cloudinary = require('../config/cloudinary');
 const streamifier = require('streamifier');
 
-const generateQRCode = async (text, qrEventId, index) => {
+const generateQRCode = async (text, qrEventId) => {
   const qrCodeText = `Text: ${text}\nEvent ID: ${qrEventId}`;
   try {
     const qrBuffer = await QRCode.toBuffer(qrCodeText);
@@ -17,7 +17,7 @@ const generateQRCode = async (text, qrEventId, index) => {
     const cloudinaryUrl = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream({
         resource_type: 'image',
-        public_id: `ticket_qr_${index}`,
+        public_id: `ticket_qr_${Date.now()}`, // استخدم timestamp لضمان التفرد
         folder: 'qrcodes',
       }, (error, result) => {
         if (error) {
@@ -40,8 +40,8 @@ exports.createTicket = async (req, res) => {
     const userId = req.params.id;
     const { eventData, userEmail, numberOfTickets } = req.body.ticketData;
 
-    if (!numberOfTickets) {
-      return res.status(400).json({ message: 'Missing required fields' });
+    if (!numberOfTickets || numberOfTickets <= 0) {
+      return res.status(400).json({ message: 'Missing or invalid number of tickets' });
     }
 
     const event = await Event.findById(eventData.id);
@@ -61,32 +61,41 @@ exports.createTicket = async (req, res) => {
     event.availableTickets -= numberOfTickets;
     await event.save();
 
-    const tickets = await Promise.all(
-      Array.from({ length: numberOfTickets }).map(async (_, index) => { // ✅ أضف index
-        const id = uuidv4();
-        const qrCodeUrl = await generateQRCode(id, eventData.id.toString(), index); // ✅ استخدم index
-        const ticket = new Ticket({
-          qrID: id,
-          event: eventData.id,
-          user: userId,
-          qrCode: qrCodeUrl,
-          status: 'unused',
-          paid: false,
-        });
-        await ticket.save();
-        return await Ticket.findById(ticket._id).populate('event');
-      })
-    );
-    await sendEmail(userEmail, 'Your Event Tickets', tickets);
+    const id = uuidv4();
+    const qrCodeUrl = await generateQRCode(id, eventData.id.toString(), 0);
 
-    res.status(201).json({ message: 'Done, Sent Ticket' });
+    const ticket = new Ticket({
+      qrID: id,
+      event: eventData.id,
+      user: userId,
+      qrCode: qrCodeUrl,
+      status: 'unused',
+      paid: false,
+      maxUses: numberOfTickets,
+      usedCount: 0
+    });
+
+    await ticket.save();
+    const populatedTicket = {
+      ...ticket.toObject(),
+      event: {
+        title: event.title,
+        date: event.date,
+        location: event.location,
+      },
+    };
+
+    await sendEmail(userEmail, 'Your Event Ticket', populatedTicket);
+
+    res.status(201).json({ message: 'Ticket created and sent' });
   } catch (err) {
-    console.error(err); // لطباعته في اللوغ
+    console.error(err);
     res.status(500).json({ message: 'Ticket creation failed: ' + err.message });
   }
 };
 
-const sendEmail = async (email, subject, tickets) => {
+
+const sendEmail = async (email, subject, ticket) => {
   if (!email) {
     throw new Error('User email is not defined');
   }
@@ -103,7 +112,7 @@ const sendEmail = async (email, subject, tickets) => {
     },
   });
 
-  const ticketsHtml = tickets.map((ticket, index) => `
+  const ticketHtml = `
   <div style="
     background: linear-gradient(135deg, #1f1c2c, #928DAB);
     color: #fff;
@@ -129,7 +138,7 @@ const sendEmail = async (email, subject, tickets) => {
       border-radius: 12px;
       box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
     ">
-      <img src="cid:image${index + 1}" alt="QR Code" style="width:100%; border-radius: 8px;" />
+      <img src="${ticket.qrCode}" alt="QR Code" style="width:100%; border-radius: 8px;" />
     </div>
     <div style="
       position: absolute;
@@ -144,7 +153,7 @@ const sendEmail = async (email, subject, tickets) => {
       transform: rotate(10deg);
     ">SPORTS</div>
   </div>
-`).join('');
+`;
 
   const htmlTemplate = `
   <html>
@@ -156,34 +165,32 @@ const sendEmail = async (email, subject, tickets) => {
       <p style="margin: 20px auto; max-width: 600px; font-size: 16px;">
         Thank you for your purchase! Below are your tickets to the sports event.
       </p>
-      ${ticketsHtml}
+      ${ticketHtml}
       <p style="margin-top: 40px; font-size: 14px; color: #aaa;">Please present these tickets at the event entrance. Enjoy the game!</p>
     </body>
   </html>
 `;
 
-  const attachments = tickets.map((ticket, index) => ({
-    filename: `ticket_${index}.png`,
+  const attachments = [{
+    filename: `ticket_.png`,
     path: ticket.qrCode,
-    cid: `image${index + 1}`,
-  }));
+    cid: 'image1',
+  }];
 
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
     subject: subject,
     html: htmlTemplate,
-    attachments: attachments,
+    attachments,
   };
-
+console.log(ticket)
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
     throw new Error('Email sending failed');
   }
 };
-
-
 
 exports.scanTicket = async (req, res) => {
   try {
@@ -194,28 +201,38 @@ exports.scanTicket = async (req, res) => {
       return res.status(200).json({ message: 'Ticket not found' });
     }
 
-    if (ticket.status === 'used') {
-      return res.status(200).json({ message: 'Ticket already used' });
-    }
-
     if (ticket.paid === false) {
       return res.status(200).json({ message: 'This ticket has not been paid for yet.' });
     }
 
-    ticket.status = 'used';
+    if (ticket.usedCount >= ticket.maxUses) {
+      return res.status(200).json({ message: 'Ticket has been fully used' });
+    }
+
+    ticket.usedCount += 1;
+
+    // إذا وصلت إلى الحد الأقصى، اعتبرها مستخدمة
+    if (ticket.usedCount >= ticket.maxUses) {
+      ticket.status = 'used';
+    }
+
     await ticket.save();
 
-    res.status(200).json({ message: 'Ticket used successfully' });
+    res.status(200).json({
+      message: 'Ticket used successfully',
+      remainingUses: ticket.maxUses - ticket.usedCount
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
+
 exports.markTicketAsPaid = async (req, res) => {
   console.log(req.body.qrId)
   try {
     const { qrId } = req.body;
-    
+
     const ticket = await Ticket.findOne({ _id: qrId });
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
@@ -233,8 +250,6 @@ exports.markTicketAsPaid = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-
 
 exports.getCountTickets = async (req, res) => {
   try {

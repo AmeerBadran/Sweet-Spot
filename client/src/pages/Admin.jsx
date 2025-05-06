@@ -14,7 +14,7 @@ export default function Admin() {
   return (
     <div className="bg-slate-100 min-h-screen relative">
       <SpeedDialComponent />
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:gap-0 gap-6 lg:grid-cols-4 py-32 px-5">
+      <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:gap-0 gap-6 lg:grid-cols-4 py-32 px-5">
         <div className=" space-y-6">
           <div className="w-full border pb-4 rounded-md bg-white">
             <div className="h-28 bg-base-color bg-opacity-90 rounded-t-md flex justify-center items-end"></div>

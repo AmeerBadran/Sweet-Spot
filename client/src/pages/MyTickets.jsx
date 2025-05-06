@@ -21,7 +21,7 @@ export default function MyTickets() {
     const fetchTicketsCount = async () => {
       try {
         const ticketsRes = await getCountUserTickets(filter, userData?.id);
-console.log(ticketsRes.data);
+        console.log(ticketsRes.data);
         setTicketsCount(ticketsRes?.data?.count || 0);
         setPageCount(Math.ceil(ticketsCount / itemsPerPage));
       } catch (error) {
@@ -102,6 +102,8 @@ console.log(ticketsRes.data);
                 date={ticket.event.date}
                 location={ticket.event.location}
                 status={ticket.status}
+                usedCount={ticket.usedCount}
+                maxUses={ticket.maxUses}
               />
             ))
           ) : (

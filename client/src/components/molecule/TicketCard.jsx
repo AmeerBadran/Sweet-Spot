@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { FaUserCheck, FaUserMinus } from "react-icons/fa";
 import {
   FiCalendar,
   FiMapPin,
@@ -20,7 +21,15 @@ function formatDate(dateString) {
   return date.toLocaleDateString("en-US", options);
 }
 
-function TicketCard({ image, title, date, status, location }) {
+function TicketCard({
+  image,
+  title,
+  date,
+  status,
+  location,
+  maxUses,
+  usedCount,
+}) {
   return (
     <div className="bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300 max-w-sm mx-auto">
       <img src={image} alt={title} className="w-full h-72 object-cover" />
@@ -37,7 +46,18 @@ function TicketCard({ image, title, date, status, location }) {
           <FiMapPin className="text-sec-color-100" />
           <span>Location: {location}</span>
         </div>
-
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <FaUserCheck className="text-sec-color-100" />
+            <span>
+              For: {maxUses} {maxUses === 1 ? "user" : "users"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <FaUserMinus className="text-sec-color-100" />
+            <span>used: {usedCount} time</span>
+          </div>
+        </div>
         <div className="flex justify-center">
           {status === "unused" ? (
             <span className="flex items-center gap-2 text-sm bg-green-100 text-green-700 px-4 py-1 rounded-full font-semibold">

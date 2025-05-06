@@ -71,7 +71,7 @@ export default function Tickets() {
         {/* Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="flex justify-between items-center gap-2 w-full"
+          className="flex justify-between items-center gap-2 w-full mb-6"
         >
           <div className="flex gap-2">
             <input
@@ -128,6 +128,8 @@ export default function Tickets() {
                 <th className="px-6 py-3">Location</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Paid</th>
+                <th className="px-6 py-3">For</th>
+                <th className="px-6 py-3">Used</th>
               </tr>
             </thead>
             <tbody>
@@ -142,6 +144,8 @@ export default function Tickets() {
                     </td>
                     <td className="px-6 py-4">{ticket.event?.location}</td>
                     <td className="px-6 py-4">{ticket.status}</td>
+                    <td className="px-6 py-4">{ticket.maxUses}</td>
+                    <td className="px-6 py-4">{ticket.usedCount}</td>
                     <td className="px-6 py-4">
                       {ticket.paid ? (
                         <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
