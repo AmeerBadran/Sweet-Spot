@@ -129,6 +129,7 @@ export default function Tickets() {
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">For</th>
                 <th className="px-6 py-3">Used</th>
+                <th className="px-6 py-3">Price</th>
                 <th className="px-6 py-3">Paid</th>
               </tr>
             </thead>
@@ -146,6 +147,9 @@ export default function Tickets() {
                     <td className="px-6 py-4">{ticket.status}</td>
                     <td className="px-6 py-4">{ticket.maxUses}</td>
                     <td className="px-6 py-4">{ticket.usedCount}</td>
+                    <td className="px-6 py-4">
+                      {Number(ticket.event.price) * Number(ticket.maxUses)}
+                    </td>
                     <td className="px-6 py-4">
                       {ticket.paid ? (
                         <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
