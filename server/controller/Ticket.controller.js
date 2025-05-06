@@ -373,7 +373,7 @@ exports.getAllTicketsWithFilter = async (req, res) => {
 
     const tickets = await Ticket.find(query)
       .populate('user', 'name email phoneNumber')
-      .populate('event', 'title date location')
+      .populate('event')
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
