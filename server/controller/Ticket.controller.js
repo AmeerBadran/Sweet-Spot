@@ -196,7 +196,7 @@ const sendEmail = async (email, subject, ticket) => {
     html: htmlTemplate,
     attachments,
   };
-  console.log(ticket);
+  
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
