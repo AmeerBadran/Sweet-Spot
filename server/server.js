@@ -19,7 +19,7 @@ app.use(cookieParser());
 
 
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'https://sweet-spot-gamma.vercel.app/',
+    origin: process.env.FRONTEND_URL || 'https://sweet-spot-gamma.vercel.app',
     methods: 'GET,PUT,POST,DELETE,PATCH',
     credentials: true,
     optionsSuccessStatus: 204
